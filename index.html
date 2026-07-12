@@ -156,6 +156,32 @@
     width:min(420px,86%);background:rgba(19,28,43,.96);border:1px solid var(--line);border-radius:14px;
     padding:16px 18px;text-align:center;font-size:13px;color:var(--ink);line-height:1.55;box-shadow:var(--shadow);}
   #satWarn b{color:var(--signal);}
+
+  /* ---- 2.0 polish ---- */
+  .screen.on>.wrap{animation:rise .38s cubic-bezier(.2,.7,.2,1);}
+  @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+  .btn{background:linear-gradient(135deg,#FFC069,#FF9E3D);transition:transform .08s,box-shadow .2s,filter .2s;}
+  .btn.teal{background:linear-gradient(135deg,#5EEAD4,#2BB8A8);}
+  .btn.ghost{background:transparent;}
+  .btn:active{transform:translateY(2px) scale(.995);}
+  input:focus{box-shadow:0 0 0 3px rgba(255,180,84,.16);}
+  .seg button{transition:background .18s,color .18s;}
+  .scorebar>i{transition:width .9s cubic-bezier(.2,.7,.2,1);}
+  .lbrow.me{box-shadow:0 0 14px rgba(255,180,84,.18);}
+  .bignum.shake{animation:shk .5s;}
+  @keyframes shk{0%,100%{transform:none;}20%{transform:translateX(-8px);}40%{transform:translateX(7px);}60%{transform:translateX(-5px);}80%{transform:translateX(3px);}}
+  .gtip{background:rgba(11,18,32,.88) !important;border:1px solid var(--line) !important;color:var(--ink) !important;
+    font-size:10.5px !important;padding:2px 7px !important;border-radius:7px !important;box-shadow:none !important;}
+  .gtip::before{display:none !important;}
+  .pod{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin-bottom:14px;}
+  .podcol{flex:1;max-width:118px;text-align:center;display:flex;flex-direction:column;gap:5px;}
+  .podname{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .podname.me{color:var(--signal);}
+  .podpts{font-size:11.5px;color:var(--muted);}
+  .podblk{display:flex;align-items:center;justify-content:center;font-size:26px;border-radius:12px 12px 0 0;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-bottom:none;}
+  .podblk.gold{border-color:rgba(255,212,121,.6);box-shadow:0 0 22px rgba(255,212,121,.18);background:linear-gradient(180deg,rgba(255,212,121,.16),var(--panel));}
+  #rCompare .lbrow .hint{width:76px;text-align:right;}
 </style>
 </head>
 <body>
@@ -251,6 +277,13 @@
       </div>
 
       <div>
+        <label class="fld">Difficulty</label>
+        <div class="seg" id="diffSeg">
+          <button data-d="easy">Easy</button><button class="on" data-d="normal">Normal</button><button data-d="hard">Hard</button>
+        </div>
+        <p class="hint" style="margin:6px 0 0;">Easy = famous landmarks · Hard = ordinary streets only</p>
+      </div>
+      <div>
         <label class="fld">Who's playing</label>
         <div class="seg" id="modeSeg">
           <button class="on" data-m="solo">Solo</button>
@@ -316,6 +349,7 @@
     <div class="chip" id="timer"><span class="k">Time left</span><span class="v mono" id="timerVal">3:00</span></div>
   </div>
   <button class="btn guessBtn" id="openGuess">📍 Place your guess</button>
+  <button class="chip" id="hintBtn" style="position:absolute;left:50%;transform:translateX(-50%);bottom:max(86px,calc(env(safe-area-inset-bottom) + 66px));z-index:600;font-size:13px;color:var(--ink);cursor:pointer;">💡 Hint (−500)</button>
 
   <div id="guessLayer">
     <div id="gmap"></div>
@@ -334,9 +368,11 @@
     <div class="tier" id="rTier">GREAT</div>
     <div class="bignum mono"><span id="rScore">0</span> <span>/ 5000 pts</span></div>
     <div class="scorebar"><i id="rBar" style="width:0%"></i></div>
-    <div class="place">It was <b id="rPlace">—</b></div>
+    <div class="place">It was <b id="rPlace">—</b> <span id="rFlag" style="font-size:19px;"></span></div>
     <div id="rmap"></div>
+    <div id="rCompare" style="display:none;"></div>
     <div class="statline"><span class="k">Distance off</span><span class="mono" id="rDist">—</span></div>
+    <div class="statline" id="rHintLine" style="display:none;"><span class="k">Hint penalty</span><span class="mono" style="color:var(--danger);" id="rHintVal">—</span></div>
     <div class="statline"><span class="k">Running total</span><span class="mono" id="rTotal">0</span></div>
     <button class="btn" id="nextBtn">Next round →</button>
   </div>
@@ -357,13 +393,18 @@
     <div id="fSaveMsg" class="hint" style="display:none;"></div>
     <div id="finalStandings" style="display:none;">
       <div class="eyebrow" style="margin-bottom:10px;">Live standings</div>
+      <div class="pod" id="podium" style="display:none;"></div>
       <div class="lb" id="finalBoard"><div class="spin"></div></div>
     </div>
+    <button class="btn teal" id="shareBtn">📸 Share my score</button>
+    <button class="btn" id="rematchBtn" style="display:none;">🔁 Rematch — same crew, new drops</button>
+    <button class="btn" id="joinRematch" style="display:none;background:linear-gradient(135deg,#E879F9,#C74EE8);color:#fff;">🔁 Rematch started — tap to join!</button>
     <button class="btn" id="againBtn">New expedition</button>
     <button class="btn ghost" id="finalLobbyBack" style="display:none;">Back to challenge</button>
   </div>
 </section>
 
+<canvas id="fx" style="position:fixed;inset:0;width:100%;height:100%;z-index:9998;pointer-events:none;"></canvas>
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -420,117 +461,300 @@ function readCfgFromUrl(){
 function slugify(n){return (n||"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,24)||"player";}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
-// [name, lat, lon, startZoom, continent, country?]  continents: EU AS NA SA AF OC
+// [name, lat, lon, zoom, continent, countryCode, difficulty E=landmark H=ordinary street]
 const PLACES=[
-  // Europe – famous
-  ["the Eiffel Tower, Paris",48.8584,2.2945,17,"EU"],["the Colosseum, Rome",41.8902,12.4922,17,"EU"],
-  ["the Grand Canal, Venice",45.4408,12.3155,16,"EU"],["the Houses of Parliament, London",51.5007,-0.1246,17,"EU"],
-  ["the Sagrada Família, Barcelona",41.4036,2.1744,17,"EU"],["the Brandenburg Gate, Berlin",52.5163,13.3777,17,"EU"],
-  ["Red Square, Moscow",55.7539,37.6208,16,"EU"],["the Acropolis, Athens",37.9715,23.7257,17,"EU"],
-  ["Mont-Saint-Michel, France",48.6361,-1.5115,16,"EU"],["Stonehenge, England",51.1789,-1.8262,17,"EU"],
-  ["St. Peter's Basilica, Vatican",41.9022,12.4539,16,"EU"],["the Hagia Sophia, Istanbul",41.0086,28.9802,17,"EU"],
-  ["the Christ the King, Lisbon",38.6779,-9.1714,16,"EU"],["the Amsterdam canals",52.3676,4.9041,16,"EU"],
-  // Europe – neighbourhoods & streets
-  ["Alfama, Lisbon",38.7128,-9.1359,16,"EU"],["Ribeira, Porto",41.1406,-8.6141,16,"EU"],
-  ["Gothic Quarter, Barcelona",41.3831,2.1772,16,"EU"],["Gràcia, Barcelona",41.4044,2.1556,16,"EU"],
-  ["Malasaña, Madrid",40.4237,-3.7064,16,"EU"],["Trastevere, Rome",41.8893,12.4695,16,"EU"],
-  ["Navigli, Milan",45.4495,9.1775,16,"EU"],["Oltrarno, Florence",43.7645,11.2502,16,"EU"],
-  ["Spaccanapoli, Naples",40.8466,14.2538,16,"EU"],["Montmartre, Paris",48.8863,2.3435,16,"EU"],
-  ["Le Marais, Paris",48.8567,2.3579,16,"EU"],["Prenzlauer Berg, Berlin",52.5380,13.4233,16,"EU"],
-  ["Altstadt, Munich",48.1366,11.5764,16,"EU"],["Speicherstadt, Hamburg",53.5415,9.9936,16,"EU"],
-  ["Jordaan, Amsterdam",52.3743,4.8832,16,"EU"],["Bruges old city",51.2093,3.2247,16,"EU"],
-  ["Ghent",51.0544,3.7228,16,"EU"],["Nyhavn, Copenhagen",55.6795,12.5903,16,"EU"],
-  ["Gamla Stan, Stockholm",59.3253,18.0711,16,"EU"],["Grünerløkka, Oslo",59.9236,10.7578,16,"EU"],
-  ["Senate Square, Helsinki",60.1691,24.9526,16,"EU"],["Royal Mile, Edinburgh",55.9495,-3.1907,16,"EU"],
-  ["Temple Bar, Dublin",53.3454,-6.2672,16,"EU"],["Northern Quarter, Manchester",53.4832,-2.2341,16,"EU"],
-  ["Old Town, Prague",50.0874,14.4208,16,"EU"],["Innere Stadt, Vienna",48.2082,16.3718,16,"EU"],
-  ["Old Town, Zurich",47.3769,8.5423,16,"EU"],["Old Town, Bern",46.9476,7.4459,16,"EU"],
-  ["Old Town, Warsaw",52.2497,21.0122,16,"EU"],["Old Town, Kraków",50.0619,19.9374,16,"EU"],
-  ["Castle Hill, Budapest",47.4979,19.0402,16,"EU"],["Old Town, Tallinn",59.4370,24.7456,16,"EU"],
-  ["Old Riga",56.9490,24.1064,16,"EU"],["Dubrovnik old city",42.6507,18.0947,16,"EU"],
-  ["Split old city",43.5083,16.4402,16,"EU"],["Santorini, Greece",36.4618,25.3753,16,"EU"],
-  ["Gamla Stan, Vilnius",54.6872,25.2797,16,"EU"],["Gornji Grad, Zagreb",45.8150,15.9795,16,"EU"],
-  ["Valletta, Malta",35.8976,14.5125,16,"EU"],["Reykjavík",64.1466,-21.9426,16,"EU"],
-  // Asia – famous
-  ["the Burj Khalifa, Dubai",25.1972,55.2744,16,"AS"],["Shibuya, Tokyo",35.6595,139.7005,17,"AS"],
-  ["the Taj Mahal, Agra",27.1751,78.0421,17,"AS"],["the Forbidden City, Beijing",39.9163,116.3972,15,"AS"],
-  ["the Petronas Towers, Kuala Lumpur",3.1578,101.7117,16,"AS"],["Marina Bay Sands, Singapore",1.2834,103.8607,16,"AS"],
-  ["Angkor Wat, Cambodia",13.4125,103.8670,15,"AS"],["the Great Wall (Badaling), China",40.3587,116.0169,15,"AS"],
-  ["Palm Jumeirah, Dubai",25.1124,55.1390,13,"AS"],["Petra, Jordan",30.3285,35.4444,16,"AS"],
-  // Asia – streets
-  ["Shinjuku, Tokyo",35.6938,139.7034,16,"AS"],["Asakusa, Tokyo",35.7147,139.7967,16,"AS"],
-  ["Akihabara, Tokyo",35.7023,139.7748,16,"AS"],["Harajuku, Tokyo",35.6702,139.7027,16,"AS"],
-  ["Dotonbori, Osaka",34.6687,135.5034,16,"AS"],["Nishiki Market, Kyoto",35.0046,135.7642,16,"AS"],
-  ["Myeongdong, Seoul",37.5636,126.9871,16,"AS"],["Hongdae, Seoul",37.5563,126.9231,16,"AS"],
-  ["Gamcheon Village, Busan",35.0979,129.0113,16,"AS"],["Tsim Sha Tsui, Hong Kong",22.2988,114.1722,16,"AS"],
-  ["Mong Kok, Hong Kong",22.3193,114.1694,16,"AS"],["Ximending, Taipei",25.0437,121.5083,16,"AS"],
-  ["Khaosan Road, Bangkok",13.7591,100.4969,16,"AS"],["Silom, Bangkok",13.7249,100.5259,16,"AS"],
-  ["Hội An old town",15.8801,108.3380,16,"AS"],["Hanoi Old Quarter",21.0340,105.8522,16,"AS"],
-  ["Chinatown, Singapore",1.2821,103.8456,16,"AS"],["Clarke Quay, Singapore",1.2905,103.8465,16,"AS"],
-  ["George Town, Penang",5.4141,100.3288,16,"AS"],["Seminyak, Bali",-8.6903,115.1614,16,"AS"],
-  ["Colaba, Mumbai",18.9220,72.8332,16,"AS"],["Connaught Place, Delhi",28.6330,77.2194,16,"AS"],
-  ["MG Road, Bangalore",12.9758,77.6095,16,"AS"],
-  // North America – famous
-  ["Central Park, New York",40.7829,-73.9654,14,"NA"],["the Golden Gate Bridge, San Francisco",37.8199,-122.4783,15,"NA"],
-  ["the CN Tower, Toronto",43.6426,-79.3871,16,"NA"],["the Grand Canyon, USA",36.1069,-112.1129,13,"NA"],
-  ["Niagara Falls",43.0799,-79.0747,15,"NA"],["the Hollywood Sign, LA",34.1341,-118.3215,16,"NA"],
-  ["the Las Vegas Strip",36.1147,-115.1728,15,"NA"],["Chichén Itzá, Mexico",20.6843,-88.5678,16,"NA"],
-  // North America – streets
-  ["Park Slope, Brooklyn",40.6726,-73.9773,16,"NA"],["Williamsburg, Brooklyn",40.7081,-73.9571,16,"NA"],
-  ["Lincoln Park, Chicago",41.9242,-87.6497,16,"NA"],["Back Bay, Boston",42.3511,-71.0872,16,"NA"],
-  ["South Beach, Miami",25.7814,-80.1300,16,"NA"],["French Quarter, New Orleans",29.9584,-90.0644,16,"NA"],
-  ["Capitol Hill, Seattle",47.6233,-122.3136,16,"NA"],["Pearl District, Portland",45.5270,-122.6822,16,"NA"],
-  ["LoDo, Denver",39.7539,-104.9990,16,"NA"],["Rainey Street, Austin",30.2586,-97.7319,16,"NA"],
-  ["Wynwood, Miami",25.8007,-80.1990,16,"NA"],["East Nashville",36.1781,-86.7339,16,"NA"],
-  ["Old Port, Montréal",45.5046,-73.5501,16,"NA"],["Le Plateau, Montréal",45.5284,-73.5784,16,"NA"],
-  ["Kensington Market, Toronto",43.6544,-79.4009,16,"NA"],["Gastown, Vancouver",49.2837,-123.1077,16,"NA"],
-  ["Old Québec",46.8126,-71.2074,16,"NA"],["Coyoacán, Mexico City",19.3469,-99.1630,16,"NA"],
-  ["Roma Norte, Mexico City",19.4200,-99.1700,16,"NA"],["La Condesa, Mexico City",19.4133,-99.1740,16,"NA"],
-  ["Historic centre, Puebla",19.0444,-98.1975,16,"NA"],["Old San Juan",18.4655,-66.1185,16,"NA"],
-  ["Polanco, Mexico City",19.4319,-99.1949,16,"NA"],["Mission District, San Francisco",37.7599,-122.4148,16,"NA"],
-  ["Capitol Hill, Washington DC",38.8899,-77.0091,16,"NA"],["Midtown, Atlanta",33.7880,-84.3838,16,"NA"],
-  // South America – famous
-  ["Christ the Redeemer, Rio",-22.9519,-43.2105,16,"SA"],["Machu Picchu, Peru",-13.1631,-72.5450,16,"SA"],
-  ["Iguazú Falls",-25.6953,-54.4367,14,"SA"],["the Obelisco, Buenos Aires",-34.6037,-58.3816,15,"SA"],
-  ["Salar de Uyuni, Bolivia",-20.1338,-67.4891,12,"SA"],["Cartagena old town, Colombia",10.4236,-75.5518,16,"SA"],
-  // South America – streets
-  ["Vila Madalena, São Paulo",-23.5573,-46.6897,16,"SA"],["Ipanema, Rio de Janeiro",-22.9840,-43.2034,16,"SA"],
-  ["Santa Teresa, Rio de Janeiro",-22.9186,-43.1795,16,"SA"],["La Boca, Buenos Aires",-34.6342,-58.3651,16,"SA"],
-  ["San Telmo, Buenos Aires",-34.6180,-58.3731,16,"SA"],["Palermo Soho, Buenos Aires",-34.5918,-58.4227,16,"SA"],
-  ["Miraflores, Lima",-12.1219,-77.0294,16,"SA"],["Barranco, Lima",-12.1464,-77.0208,16,"SA"],
-  ["Bellavista, Santiago",-33.4254,-70.6416,16,"SA"],["El Poblado, Medellín",6.2100,-75.5693,16,"SA"],
-  ["La Candelaria, Bogotá",4.5981,-74.0738,16,"SA"],["La Mariscal, Quito",-0.2001,-78.4900,16,"SA"],
-  ["Centro Histórico, Montevideo",-34.9058,-56.1878,16,"SA"],["Miraflores, Lima",-12.1219,-77.0295,16,"SA"],
-  // Africa – famous
-  ["the Pyramids of Giza, Egypt",29.9792,31.1342,15,"AF"],["Table Mountain, Cape Town",-33.9628,18.4098,13,"AF"],
-  ["Victoria Falls",-17.9243,25.8572,14,"AF"],["the Merzouga dunes, Sahara",31.0996,-4.0142,13,"AF"],
-  ["the Marrakech medina, Morocco",31.6295,-7.9811,16,"AF"],["the Pyramids of Meroë, Sudan",16.9377,33.7490,15,"AF"],
-  // Africa – streets
-  ["Bo-Kaap, Cape Town",-33.9253,18.4146,16,"AF"],["Woodstock, Cape Town",-33.9295,18.4487,16,"AF"],
-  ["Melville, Johannesburg",-26.1869,27.9981,16,"AF"],["Westlands, Nairobi",-1.2673,36.8023,16,"AF"],
-  ["Osu, Accra",5.5587,-0.1666,16,"AF"],["Gueliz, Marrakech",31.6254,-7.9986,16,"AF"],
-  ["Sidi Bou Said, Tunisia",36.8704,10.3421,16,"AF"],["Stellenbosch, South Africa",-33.9309,18.8647,16,"AF"],
-  // Oceania – famous
-  ["the Sydney Opera House",-33.8568,151.2153,17,"OC"],["Uluru, Australia",-25.3444,131.0369,13,"OC"],
-  ["Bondi Beach, Sydney",-33.8908,151.2743,16,"OC"],["the Twelve Apostles, Australia",-38.6662,143.1044,14,"OC"],
-  ["Auckland, New Zealand",-36.8485,174.7633,14,"OC"],["Queenstown, New Zealand",-45.0312,168.6626,13,"OC"],
-  // Oceania – streets
-  ["Surry Hills, Sydney",-33.8832,151.2107,16,"OC"],["Fitzroy, Melbourne",-37.7962,144.9791,16,"OC"],
-  ["St Kilda, Melbourne",-37.8679,144.9754,16,"OC"],["New Farm, Brisbane",-27.4659,153.0453,16,"OC"],
-  ["Fremantle, Perth",-32.0549,115.7484,16,"OC"],["Salamanca, Hobart",-42.8860,147.3310,16,"OC"],
-  ["Cuba Street, Wellington",-41.2959,174.7741,16,"OC"],["Ponsonby, Auckland",-36.8610,174.7471,16,"OC"],
-  ["Christchurch central",-43.5321,172.6363,16,"OC"],
-  // Israel
-  ["the Old City, Jerusalem",31.7767,35.2345,17,"AS","IL"],["the Tel Aviv coast",32.0809,34.7681,16,"AS","IL"],
-  ["the Baháʼí Gardens, Haifa",32.8156,34.9871,17,"AS","IL"],["Masada",31.3157,35.3539,16,"AS","IL"],
-  ["the Dead Sea",31.5590,35.4732,13,"AS","IL"],["the Sea of Galilee",32.8000,35.5900,12,"AS","IL"],
-  ["Makhtesh Ramon",30.6090,34.8060,13,"AS","IL"],["Caesarea, Israel",32.5020,34.8930,16,"AS","IL"],
-  ["Florentin, Tel Aviv",32.0548,34.7733,16,"AS","IL"],["Jaffa",32.0513,34.7520,16,"AS","IL"],
-  ["Nazareth",32.6996,35.3035,16,"AS","IL"],["Beer Sheva",31.2516,34.7915,16,"AS","IL"]
+  // ===== EUROPE — famous =====
+  ["the Eiffel Tower, Paris",48.8584,2.2945,17,"EU","FR","E"],["the Colosseum, Rome",41.8902,12.4922,17,"EU","IT","E"],
+  ["the Grand Canal, Venice",45.4408,12.3155,16,"EU","IT","E"],["the Houses of Parliament, London",51.5007,-0.1246,17,"EU","GB","E"],
+  ["the Sagrada Família, Barcelona",41.4036,2.1744,17,"EU","ES","E"],["the Brandenburg Gate, Berlin",52.5163,13.3777,17,"EU","DE","E"],
+  ["Red Square, Moscow",55.7539,37.6208,16,"EU","RU","E"],["the Acropolis, Athens",37.9715,23.7257,17,"EU","GR","E"],
+  ["Mont-Saint-Michel, France",48.6361,-1.5115,16,"EU","FR","E"],["Stonehenge, England",51.1789,-1.8262,17,"EU","GB","E"],
+  ["St. Peter's Basilica, Vatican",41.9022,12.4539,16,"EU","VA","E"],["the Hagia Sophia, Istanbul",41.0086,28.9802,17,"EU","TR","E"],
+  ["the Christ the King, Lisbon",38.6779,-9.1714,16,"EU","PT","E"],["the Amsterdam canals",52.3676,4.9041,16,"EU","NL","E"],
+  ["the Louvre, Paris",48.8607,2.3376,17,"EU","FR","E"],["the Arc de Triomphe, Paris",48.8738,2.2950,17,"EU","FR","E"],
+  ["the Palace of Versailles",48.8049,2.1204,16,"EU","FR","E"],["the Champs-Élysées, Paris",48.8698,2.3078,16,"EU","FR","E"],
+  ["Tower Bridge, London",51.5055,-0.0754,17,"EU","GB","E"],["Buckingham Palace, London",51.5014,-0.1419,17,"EU","GB","E"],
+  ["the Abbey Road crossing, London",51.5322,-0.1774,17,"EU","GB","E"],["Piccadilly Circus, London",51.5101,-0.1340,17,"EU","GB","E"],
+  ["Edinburgh Castle",55.9486,-3.1999,16,"EU","GB","E"],["the Trevi Fountain, Rome",41.9009,12.4833,17,"EU","IT","E"],
+  ["the Pantheon, Rome",41.8986,12.4769,17,"EU","IT","E"],["the Milan Duomo",45.4642,9.1900,17,"EU","IT","E"],
+  ["the Leaning Tower of Pisa",43.7230,10.3966,17,"EU","IT","E"],["Pompeii, Italy",40.7489,14.4989,16,"EU","IT","E"],
+  ["Neuschwanstein Castle, Germany",47.5576,10.7498,16,"EU","DE","E"],["Cologne Cathedral",50.9413,6.9583,17,"EU","DE","E"],
+  ["Charles Bridge, Prague",50.0865,14.4114,17,"EU","CZ","E"],["Schönbrunn Palace, Vienna",48.1858,16.3122,16,"EU","AT","E"],
+  ["Hallstatt, Austria",47.5622,13.6493,16,"EU","AT","E"],["the Alhambra, Granada",37.1760,-3.5881,16,"EU","ES","E"],
+  ["Park Güell, Barcelona",41.4145,2.1527,16,"EU","ES","E"],["the Cliffs of Moher, Ireland",52.9715,-9.4265,15,"EU","IE","E"],
+  ["Zermatt & the Matterhorn",46.0207,7.7491,15,"EU","CH","E"],["Kotor old town, Montenegro",42.4247,18.7712,16,"EU","ME","E"],
+  ["Dubrovnik old city",42.6507,18.0947,16,"EU","HR","E"],["Santorini, Greece",36.4618,25.3753,16,"EU","GR","E"],
+  // ===== EUROPE — streets =====
+  ["Alfama, Lisbon",38.7128,-9.1359,16,"EU","PT","H"],["Ribeira, Porto",41.1406,-8.6141,16,"EU","PT","H"],
+  ["Gothic Quarter, Barcelona",41.3831,2.1772,16,"EU","ES","H"],["Gràcia, Barcelona",41.4044,2.1556,16,"EU","ES","H"],
+  ["Malasaña, Madrid",40.4237,-3.7064,16,"EU","ES","H"],["Trastevere, Rome",41.8893,12.4695,16,"EU","IT","H"],
+  ["Navigli, Milan",45.4495,9.1775,16,"EU","IT","H"],["Oltrarno, Florence",43.7645,11.2502,16,"EU","IT","H"],
+  ["Spaccanapoli, Naples",40.8466,14.2538,16,"EU","IT","H"],["Montmartre, Paris",48.8863,2.3435,16,"EU","FR","H"],
+  ["Le Marais, Paris",48.8567,2.3579,16,"EU","FR","H"],["Prenzlauer Berg, Berlin",52.5380,13.4233,16,"EU","DE","H"],
+  ["Altstadt, Munich",48.1366,11.5764,16,"EU","DE","H"],["Speicherstadt, Hamburg",53.5415,9.9936,16,"EU","DE","H"],
+  ["Jordaan, Amsterdam",52.3743,4.8832,16,"EU","NL","H"],["Bruges old city",51.2093,3.2247,16,"EU","BE","H"],
+  ["Ghent",51.0544,3.7228,16,"EU","BE","H"],["Nyhavn, Copenhagen",55.6795,12.5903,16,"EU","DK","H"],
+  ["Gamla Stan, Stockholm",59.3253,18.0711,16,"EU","SE","H"],["Grünerløkka, Oslo",59.9236,10.7578,16,"EU","NO","H"],
+  ["Senate Square, Helsinki",60.1691,24.9526,16,"EU","FI","H"],["Royal Mile, Edinburgh",55.9495,-3.1907,16,"EU","GB","H"],
+  ["Temple Bar, Dublin",53.3454,-6.2672,16,"EU","IE","H"],["Northern Quarter, Manchester",53.4832,-2.2341,16,"EU","GB","H"],
+  ["Old Town, Prague",50.0874,14.4208,16,"EU","CZ","H"],["Innere Stadt, Vienna",48.2082,16.3718,16,"EU","AT","H"],
+  ["Old Town, Zurich",47.3769,8.5423,16,"EU","CH","H"],["Old Town, Bern",46.9476,7.4459,16,"EU","CH","H"],
+  ["Old Town, Warsaw",52.2497,21.0122,16,"EU","PL","H"],["Old Town, Kraków",50.0619,19.9374,16,"EU","PL","H"],
+  ["Castle Hill, Budapest",47.4979,19.0402,16,"EU","HU","H"],["Old Town, Tallinn",59.4370,24.7456,16,"EU","EE","H"],
+  ["Old Riga",56.9490,24.1064,16,"EU","LV","H"],["Split old city",43.5083,16.4402,16,"EU","HR","H"],
+  ["Old Town, Vilnius",54.6872,25.2797,16,"EU","LT","H"],["Gornji Grad, Zagreb",45.8150,15.9795,16,"EU","HR","H"],
+  ["Valletta, Malta",35.8976,14.5125,16,"EU","MT","H"],["Reykjavík",64.1466,-21.9426,16,"EU","IS","H"],
+  ["Camden, London",51.5390,-0.1426,16,"EU","GB","H"],["Shoreditch, London",51.5245,-0.0786,16,"EU","GB","H"],
+  ["Notting Hill, London",51.5160,-0.2100,16,"EU","GB","H"],["the Brighton Lanes",50.8225,-0.1400,16,"EU","GB","H"],
+  ["Stokes Croft, Bristol",51.4622,-2.5904,16,"EU","GB","H"],["Bold Street, Liverpool",53.4023,-2.9800,16,"EU","GB","H"],
+  ["the West End, Glasgow",55.8740,-4.2920,16,"EU","GB","H"],["the Shambles, York",53.9599,-1.0817,16,"EU","GB","H"],
+  ["Bath, England",51.3813,-2.3590,16,"EU","GB","H"],["Oxford",51.7548,-1.2544,16,"EU","GB","H"],
+  ["Cambridge",52.2053,0.1218,16,"EU","GB","H"],["the Latin Quarter, Galway",53.2707,-9.0568,16,"EU","IE","H"],
+  ["Cork",51.8985,-8.4756,16,"EU","IE","H"],["Vieux Lyon",45.7622,4.8270,16,"EU","FR","H"],
+  ["Le Panier, Marseille",43.2988,5.3681,16,"EU","FR","H"],["Vieux Nice",43.6961,7.2754,16,"EU","FR","H"],
+  ["Saint-Pierre, Bordeaux",44.8390,-0.5713,16,"EU","FR","H"],["Petite France, Strasbourg",48.5804,7.7408,16,"EU","FR","H"],
+  ["Place du Capitole, Toulouse",43.6045,1.4440,16,"EU","FR","H"],["Annecy old town",45.8992,6.1279,16,"EU","FR","H"],
+  ["Colmar, France",48.0778,7.3557,16,"EU","FR","H"],["Antwerp old centre",51.2213,4.4051,16,"EU","BE","H"],
+  ["Leuven",50.8798,4.7005,16,"EU","BE","H"],["the Belgian Quarter, Cologne",50.9366,6.9399,16,"EU","DE","H"],
+  ["Sachsenhausen, Frankfurt",50.1038,8.6842,16,"EU","DE","H"],["Neustadt, Dresden",51.0637,13.7444,16,"EU","DE","H"],
+  ["Plagwitz, Leipzig",51.3306,12.3299,16,"EU","DE","H"],["Heidelberg Altstadt",49.4116,8.7100,16,"EU","DE","H"],
+  ["Freiburg",47.9955,7.8522,16,"EU","DE","H"],["Nuremberg Altstadt",49.4539,11.0775,16,"EU","DE","H"],
+  ["Bologna",44.4938,11.3426,16,"EU","IT","H"],["Verona",45.4430,10.9938,16,"EU","IT","H"],
+  ["Turin",45.0735,7.6862,16,"EU","IT","H"],["Genoa old town",44.4076,8.9338,16,"EU","IT","H"],
+  ["Palermo",38.1157,13.3615,16,"EU","IT","H"],["Catania",37.5024,15.0873,16,"EU","IT","H"],
+  ["Bari old town",41.1276,16.8686,16,"EU","IT","H"],["Siena",43.3182,11.3316,16,"EU","IT","H"],
+  ["Lucca",43.8430,10.5057,16,"EU","IT","H"],["Vernazza, Cinque Terre",44.1350,9.6840,16,"EU","IT","H"],
+  ["Santa Cruz, Seville",37.3849,-5.9902,16,"EU","ES","H"],["El Carmen, Valencia",39.4784,-0.3790,16,"EU","ES","H"],
+  ["Albaicín, Granada",37.1810,-3.5928,16,"EU","ES","H"],["Casco Viejo, Bilbao",43.2569,-2.9236,16,"EU","ES","H"],
+  ["San Sebastián old town",43.3237,-1.9829,16,"EU","ES","H"],["Toledo",39.8581,-4.0244,16,"EU","ES","H"],
+  ["the Judería, Córdoba",37.8790,-4.7794,16,"EU","ES","H"],["Sintra",38.7970,-9.3897,16,"EU","PT","H"],
+  ["Coimbra",40.2110,-8.4292,16,"EU","PT","H"],["Braga",41.5510,-8.4280,16,"EU","PT","H"],
+  ["Faro old town",37.0136,-7.9350,16,"EU","PT","H"],["Utrecht",52.0907,5.1214,16,"EU","NL","H"],
+  ["Rotterdam",51.9200,4.4800,16,"EU","NL","H"],["Haarlem",52.3813,4.6370,16,"EU","NL","H"],
+  ["Delft",52.0116,4.3571,16,"EU","NL","H"],["Bryggen, Bergen",60.3975,5.3242,16,"EU","NO","H"],
+  ["Haga, Gothenburg",57.6990,11.9610,16,"EU","SE","H"],["Malmö",55.6050,13.0000,16,"EU","SE","H"],
+  ["the Latin Quarter, Aarhus",56.1580,10.2100,16,"EU","DK","H"],["Bakklandet, Trondheim",63.4290,10.4030,16,"EU","NO","H"],
+  ["Turku",60.4518,22.2666,16,"EU","FI","H"],["the Long Market, Gdańsk",54.3489,18.6531,16,"EU","PL","H"],
+  ["the Rynek, Wrocław",51.1100,17.0320,16,"EU","PL","H"],["Poznań old town",52.4083,16.9335,16,"EU","PL","H"],
+  ["Brno",49.1951,16.6068,16,"EU","CZ","H"],["Český Krumlov",48.8109,14.3153,16,"EU","CZ","H"],
+  ["Getreidegasse, Salzburg",47.8003,13.0430,16,"EU","AT","H"],["Graz",47.0707,15.4395,16,"EU","AT","H"],
+  ["Innsbruck old town",47.2682,11.3933,16,"EU","AT","H"],["Lucerne old town",47.0517,8.3059,16,"EU","CH","H"],
+  ["Geneva old town",46.2010,6.1470,16,"EU","CH","H"],["Lausanne",46.5220,6.6330,16,"EU","CH","H"],
+  ["Ladadika, Thessaloniki",40.6340,22.9390,16,"EU","GR","H"],["Plaka, Athens",37.9724,23.7292,16,"EU","GR","H"],
+  ["Rhodes old town",36.4441,28.2270,16,"EU","GR","H"],["Chania old town, Crete",35.5185,24.0180,16,"EU","GR","H"],
+  ["Ljubljana old town",46.0514,14.5060,16,"EU","SI","H"],["Baščaršija, Sarajevo",43.8598,18.4313,16,"EU","BA","H"],
+  ["Skadarlija, Belgrade",44.8176,20.4633,16,"EU","RS","H"],["Lipscani, Bucharest",44.4310,26.1027,16,"EU","RO","H"],
+  ["Vitosha Boulevard, Sofia",42.6903,23.3199,16,"EU","BG","H"],["Mostar old town",43.3372,17.8150,16,"EU","BA","H"],
+  ["Kaunas old town",54.8969,23.8863,16,"EU","LT","H"],["Tampere",61.4981,23.7610,16,"EU","FI","H"],
+  ["Akureyri, Iceland",65.6826,-18.0907,16,"EU","IS","H"],
+  // ===== ASIA — famous =====
+  ["the Burj Khalifa, Dubai",25.1972,55.2744,16,"AS","AE","E"],["Shibuya Crossing, Tokyo",35.6595,139.7005,17,"AS","JP","E"],
+  ["the Taj Mahal, Agra",27.1751,78.0421,17,"AS","IN","E"],["the Forbidden City, Beijing",39.9163,116.3972,15,"AS","CN","E"],
+  ["the Petronas Towers, Kuala Lumpur",3.1578,101.7117,16,"AS","MY","E"],["Marina Bay Sands, Singapore",1.2834,103.8607,16,"AS","SG","E"],
+  ["Angkor Wat, Cambodia",13.4125,103.8670,15,"AS","KH","E"],["the Great Wall (Badaling), China",40.3587,116.0169,15,"AS","CN","E"],
+  ["Palm Jumeirah, Dubai",25.1124,55.1390,13,"AS","AE","E"],["Petra, Jordan",30.3285,35.4444,16,"AS","JO","E"],
+  ["Fushimi Inari shrine, Kyoto",34.9671,135.7727,16,"AS","JP","E"],["Kinkaku-ji, Kyoto",35.0394,135.7292,16,"AS","JP","E"],
+  ["Tōdai-ji, Nara",34.6851,135.8048,16,"AS","JP","E"],["Osaka Castle",34.6873,135.5262,16,"AS","JP","E"],
+  ["Tokyo Tower",35.6586,139.7454,17,"AS","JP","E"],["Lake Kawaguchi & Mount Fuji",35.5171,138.7510,15,"AS","JP","E"],
+  ["Gyeongbokgung Palace, Seoul",37.5796,126.9770,16,"AS","KR","E"],["Taipei 101",25.0340,121.5645,16,"AS","TW","E"],
+  ["Wat Arun, Bangkok",13.7437,100.4888,16,"AS","TH","E"],["Wat Pho, Bangkok",13.7465,100.4927,16,"AS","TH","E"],
+  ["Gardens by the Bay, Singapore",1.2816,103.8636,16,"AS","SG","E"],["Borobudur, Indonesia",-7.6079,110.2038,15,"AS","ID","E"],
+  ["the Sheikh Zayed Mosque, Abu Dhabi",24.4128,54.4750,16,"AS","AE","E"],["the Burj Al Arab, Dubai",25.1412,55.1853,16,"AS","AE","E"],
+  ["the Blue Mosque, Istanbul",41.0054,28.9768,17,"AS","TR","E"],["Galata Tower, Istanbul",41.0256,28.9744,17,"AS","TR","E"],
+  ["Göreme, Cappadocia",38.6431,34.8289,15,"AS","TR","E"],["the Golden Temple, Amritsar",31.6200,74.8765,16,"AS","IN","E"],
+  ["Hawa Mahal, Jaipur",26.9239,75.8267,17,"AS","IN","E"],["the Gateway of India, Mumbai",18.9217,72.8347,17,"AS","IN","E"],
+  ["Galle Fort, Sri Lanka",6.0300,80.2167,16,"AS","LK","E"],
+  // ===== ASIA — streets =====
+  ["Shinjuku, Tokyo",35.6938,139.7034,16,"AS","JP","H"],["Asakusa, Tokyo",35.7147,139.7967,16,"AS","JP","H"],
+  ["Akihabara, Tokyo",35.7023,139.7748,16,"AS","JP","H"],["Harajuku, Tokyo",35.6702,139.7027,16,"AS","JP","H"],
+  ["Dotonbori, Osaka",34.6687,135.5034,16,"AS","JP","H"],["Nishiki Market, Kyoto",35.0046,135.7642,16,"AS","JP","H"],
+  ["Ginza, Tokyo",35.6717,139.7650,16,"AS","JP","H"],["Shimokitazawa, Tokyo",35.6614,139.6682,16,"AS","JP","H"],
+  ["Nakameguro, Tokyo",35.6440,139.6982,16,"AS","JP","H"],["Susukino, Sapporo",43.0554,141.3532,16,"AS","JP","H"],
+  ["Tenjin, Fukuoka",33.5915,130.3989,16,"AS","JP","H"],["Hondori, Hiroshima",34.3935,132.4596,16,"AS","JP","H"],
+  ["Higashi Chaya, Kanazawa",36.5725,136.6668,16,"AS","JP","H"],["Takayama old town",36.1420,137.2590,16,"AS","JP","H"],
+  ["Komachi-dori, Kamakura",35.3211,139.5522,16,"AS","JP","H"],["Yokohama Chinatown",35.4426,139.6462,16,"AS","JP","H"],
+  ["Arashiyama, Kyoto",35.0094,135.6668,16,"AS","JP","H"],["Myeongdong, Seoul",37.5636,126.9871,16,"AS","KR","H"],
+  ["Hongdae, Seoul",37.5563,126.9231,16,"AS","KR","H"],["Bukchon Hanok Village, Seoul",37.5826,126.9831,16,"AS","KR","H"],
+  ["Insadong, Seoul",37.5744,126.9850,16,"AS","KR","H"],["Gangnam, Seoul",37.4979,127.0276,16,"AS","KR","H"],
+  ["Jeonju Hanok Village",35.8150,127.1530,16,"AS","KR","H"],["Gamcheon Village, Busan",35.0979,129.0113,16,"AS","KR","H"],
+  ["Tsim Sha Tsui, Hong Kong",22.2988,114.1722,16,"AS","HK","H"],["Mong Kok, Hong Kong",22.3193,114.1694,16,"AS","HK","H"],
+  ["Ximending, Taipei",25.0437,121.5083,16,"AS","TW","H"],["Jiufen, Taiwan",25.1097,121.8442,16,"AS","TW","H"],
+  ["Tainan",22.9970,120.2110,16,"AS","TW","H"],["the Pier-2 Art Center, Kaohsiung",22.6203,120.2818,16,"AS","TW","H"],
+  ["Khaosan Road, Bangkok",13.7591,100.4969,16,"AS","TH","H"],["Silom, Bangkok",13.7249,100.5259,16,"AS","TH","H"],
+  ["Sukhumvit, Bangkok",13.7380,100.5610,16,"AS","TH","H"],["Chiang Mai old city",18.7883,98.9853,16,"AS","TH","H"],
+  ["Phuket old town",7.8850,98.3860,16,"AS","TH","H"],["Ayutthaya, Thailand",14.3560,100.5680,16,"AS","TH","H"],
+  ["Hội An old town",15.8801,108.3380,16,"AS","VN","H"],["Hanoi Old Quarter",21.0340,105.8522,16,"AS","VN","H"],
+  ["District 1, Ho Chi Minh City",10.7743,106.7010,16,"AS","VN","H"],["the Imperial City, Huế",16.4700,107.5790,16,"AS","VN","H"],
+  ["Intramuros, Manila",14.5896,120.9750,16,"AS","PH","H"],["Colon Street, Cebu",10.2952,123.9020,16,"AS","PH","H"],
+  ["Chinatown, Singapore",1.2821,103.8456,16,"AS","SG","H"],["Clarke Quay, Singapore",1.2905,103.8465,16,"AS","SG","H"],
+  ["Little India, Singapore",1.3066,103.8518,16,"AS","SG","H"],["Kampong Glam, Singapore",1.3025,103.8590,16,"AS","SG","H"],
+  ["Orchard Road, Singapore",1.3048,103.8318,16,"AS","SG","H"],["George Town, Penang",5.4141,100.3288,16,"AS","MY","H"],
+  ["Jonker Street, Malacca",2.1954,102.2465,16,"AS","MY","H"],["Bukit Bintang, Kuala Lumpur",3.1466,101.7110,16,"AS","MY","H"],
+  ["Seminyak, Bali",-8.6903,115.1614,16,"AS","ID","H"],["Ubud, Bali",-8.5069,115.2625,16,"AS","ID","H"],
+  ["Kota Tua, Jakarta",-6.1352,106.8133,16,"AS","ID","H"],["Malioboro, Yogyakarta",-7.7926,110.3658,16,"AS","ID","H"],
+  ["Canggu, Bali",-8.6478,115.1385,16,"AS","ID","H"],["Colaba, Mumbai",18.9220,72.8332,16,"AS","IN","H"],
+  ["Connaught Place, Delhi",28.6330,77.2194,16,"AS","IN","H"],["MG Road, Bangalore",12.9758,77.6095,16,"AS","IN","H"],
+  ["Udaipur old city",24.5764,73.6835,16,"AS","IN","H"],["Fort Kochi",9.9658,76.2422,16,"AS","IN","H"],
+  ["Panjim, Goa",15.4989,73.8278,16,"AS","IN","H"],["Park Street, Kolkata",22.5530,88.3520,16,"AS","IN","H"],
+  ["Fort, Colombo",6.9344,79.8428,16,"AS","LK","H"],["Thamel, Kathmandu",27.7154,85.3123,16,"AS","NP","H"],
+  ["Dubai Marina",25.0805,55.1403,16,"AS","AE","H"],["the Gold Souk, Deira",25.2677,55.2963,16,"AS","AE","H"],
+  ["Souq Waqif, Doha",25.2867,51.5333,16,"AS","QA","H"],["Rainbow Street, Amman",31.9497,35.9328,16,"AS","JO","H"],
+  ["Kadıköy, Istanbul",40.9905,29.0250,16,"AS","TR","H"],["the Kordon, İzmir",38.4322,27.1420,16,"AS","TR","H"],
+  ["Tbilisi old town",41.6907,44.8080,16,"AS","GE","H"],["Northern Avenue, Yerevan",40.1830,44.5146,16,"AS","AM","H"],
+  ["Icherisheher, Baku",40.3661,49.8352,16,"AS","AZ","H"],["Arbat Street, Almaty",43.2565,76.9286,16,"AS","KZ","H"],
+  ["the riverside, Phnom Penh",11.5696,104.9282,16,"AS","KH","H"],["Luang Prabang",19.8867,102.1350,16,"AS","LA","H"],
+  // ===== NORTH AMERICA — famous =====
+  ["Central Park, New York",40.7829,-73.9654,14,"NA","US","E"],["the Golden Gate Bridge, San Francisco",37.8199,-122.4783,15,"NA","US","E"],
+  ["the CN Tower, Toronto",43.6426,-79.3871,16,"NA","CA","E"],["the Grand Canyon, USA",36.1069,-112.1129,13,"NA","US","E"],
+  ["Niagara Falls",43.0799,-79.0747,15,"NA","CA","E"],["the Hollywood Sign, LA",34.1341,-118.3215,16,"NA","US","E"],
+  ["the Las Vegas Strip",36.1147,-115.1728,15,"NA","US","E"],["Chichén Itzá, Mexico",20.6843,-88.5678,16,"NA","MX","E"],
+  ["Times Square, New York",40.7580,-73.9855,17,"NA","US","E"],["the Brooklyn Bridge",40.7061,-73.9969,16,"NA","US","E"],
+  ["the Statue of Liberty",40.6892,-74.0445,16,"NA","US","E"],["the White House, Washington",38.8977,-77.0365,17,"NA","US","E"],
+  ["the Lincoln Memorial, Washington",38.8893,-77.0502,17,"NA","US","E"],["Mount Rushmore",43.8791,-103.4591,15,"NA","US","E"],
+  ["Old Faithful, Yellowstone",44.4605,-110.8281,15,"NA","US","E"],["Tunnel View, Yosemite",37.7156,-119.6773,15,"NA","US","E"],
+  ["the Space Needle, Seattle",47.6205,-122.3493,16,"NA","US","E"],["Cloud Gate (the Bean), Chicago",41.8827,-87.6233,17,"NA","US","E"],
+  ["Alcatraz Island",37.8267,-122.4230,16,"NA","US","E"],["Banff Avenue, Canada",51.1784,-115.5708,16,"NA","CA","E"],
+  ["Lake Louise, Canada",51.4168,-116.2160,15,"NA","CA","E"],["Teotihuacan, Mexico",19.6925,-98.8438,15,"NA","MX","E"],
+  ["Waikiki Beach, Honolulu",21.2761,-157.8267,16,"NA","US","E"],
+  // ===== NORTH AMERICA — streets =====
+  ["Park Slope, Brooklyn",40.6726,-73.9773,16,"NA","US","H"],["Williamsburg, Brooklyn",40.7081,-73.9571,16,"NA","US","H"],
+  ["Lincoln Park, Chicago",41.9242,-87.6497,16,"NA","US","H"],["Back Bay, Boston",42.3511,-71.0872,16,"NA","US","H"],
+  ["South Beach, Miami",25.7814,-80.1300,16,"NA","US","H"],["the French Quarter, New Orleans",29.9584,-90.0644,16,"NA","US","H"],
+  ["Capitol Hill, Seattle",47.6233,-122.3136,16,"NA","US","H"],["the Pearl District, Portland",45.5270,-122.6822,16,"NA","US","H"],
+  ["LoDo, Denver",39.7539,-104.9990,16,"NA","US","H"],["Rainey Street, Austin",30.2586,-97.7319,16,"NA","US","H"],
+  ["Wynwood, Miami",25.8007,-80.1990,16,"NA","US","H"],["East Nashville",36.1781,-86.7339,16,"NA","US","H"],
+  ["the Old Port, Montréal",45.5046,-73.5501,16,"NA","CA","H"],["Le Plateau, Montréal",45.5284,-73.5784,16,"NA","CA","H"],
+  ["Kensington Market, Toronto",43.6544,-79.4009,16,"NA","CA","H"],["Gastown, Vancouver",49.2837,-123.1077,16,"NA","CA","H"],
+  ["Old Québec",46.8126,-71.2074,16,"NA","CA","H"],["Coyoacán, Mexico City",19.3469,-99.1630,16,"NA","MX","H"],
+  ["Roma Norte, Mexico City",19.4200,-99.1700,16,"NA","MX","H"],["La Condesa, Mexico City",19.4133,-99.1740,16,"NA","MX","H"],
+  ["the historic centre, Puebla",19.0444,-98.1975,16,"NA","MX","H"],["Old San Juan, Puerto Rico",18.4655,-66.1185,16,"NA","PR","H"],
+  ["Polanco, Mexico City",19.4319,-99.1949,16,"NA","MX","H"],["the Mission District, San Francisco",37.7599,-122.4148,16,"NA","US","H"],
+  ["Capitol Hill, Washington DC",38.8899,-77.0091,16,"NA","US","H"],["Midtown, Atlanta",33.7880,-84.3838,16,"NA","US","H"],
+  ["SoHo, New York",40.7233,-74.0030,16,"NA","US","H"],["Greenwich Village, New York",40.7336,-74.0027,16,"NA","US","H"],
+  ["Harlem, New York",40.8081,-73.9450,16,"NA","US","H"],["Astoria, Queens",40.7644,-73.9235,16,"NA","US","H"],
+  ["Venice Beach, LA",33.9850,-118.4695,16,"NA","US","H"],["Third Street, Santa Monica",34.0161,-118.4970,16,"NA","US","H"],
+  ["Rodeo Drive, Beverly Hills",34.0674,-118.4001,16,"NA","US","H"],["Silver Lake, LA",34.0870,-118.2700,16,"NA","US","H"],
+  ["Haight-Ashbury, San Francisco",37.7699,-122.4469,16,"NA","US","H"],["Chinatown, San Francisco",37.7941,-122.4078,16,"NA","US","H"],
+  ["Wicker Park, Chicago",41.9088,-87.6773,16,"NA","US","H"],["Georgetown, Washington DC",38.9076,-77.0723,16,"NA","US","H"],
+  ["Old City, Philadelphia",39.9500,-75.1450,16,"NA","US","H"],["Fishtown, Philadelphia",39.9720,-75.1330,16,"NA","US","H"],
+  ["Savannah historic district",32.0809,-81.0912,16,"NA","US","H"],["King Street, Charleston",32.7813,-79.9320,16,"NA","US","H"],
+  ["Duval Street, Key West",24.5551,-81.8030,16,"NA","US","H"],["Broadway, Nashville",36.1612,-86.7775,16,"NA","US","H"],
+  ["Beale Street, Memphis",35.1399,-90.0524,16,"NA","US","H"],["Fremont Street, Las Vegas",36.1699,-115.1430,16,"NA","US","H"],
+  ["the Gaslamp Quarter, San Diego",32.7113,-117.1602,16,"NA","US","H"],["La Jolla, San Diego",32.8473,-117.2742,16,"NA","US","H"],
+  ["Ann Arbor, Michigan",42.2808,-83.7430,16,"NA","US","H"],["State Street, Madison",43.0747,-89.3900,16,"NA","US","H"],
+  ["Asheville, North Carolina",35.5950,-82.5515,16,"NA","US","H"],["South Congress, Austin",30.2489,-97.7501,16,"NA","US","H"],
+  ["Old Town Scottsdale",33.4942,-111.9261,16,"NA","US","H"],["the Plaza, Santa Fe",35.6870,-105.9378,16,"NA","US","H"],
+  ["Pearl Street, Boulder",40.0176,-105.2797,16,"NA","US","H"],["Church Street, Burlington",44.4780,-73.2129,16,"NA","US","H"],
+  ["the Old Port, Portland Maine",43.6567,-70.2536,16,"NA","US","H"],["Providence, Rhode Island",41.8240,-71.4128,16,"NA","US","H"],
+  ["Anchorage, Alaska",61.2181,-149.9003,16,"NA","US","H"],["ByWard Market, Ottawa",45.4275,-75.6920,16,"NA","CA","H"],
+  ["the Halifax waterfront",44.6488,-63.5752,16,"NA","CA","H"],["Victoria, British Columbia",48.4284,-123.3656,16,"NA","CA","H"],
+  ["Whistler Village",50.1163,-122.9574,16,"NA","CA","H"],["Jellybean Row, St. John's",47.5615,-52.7126,16,"NA","CA","H"],
+  ["the Distillery District, Toronto",43.6503,-79.3596,16,"NA","CA","H"],["Stephen Avenue, Calgary",51.0453,-114.0631,16,"NA","CA","H"],
+  ["Guadalajara centro",20.6767,-103.3475,16,"NA","MX","H"],["San Miguel de Allende",20.9144,-100.7452,16,"NA","MX","H"],
+  ["Oaxaca centro",17.0606,-96.7253,16,"NA","MX","H"],["Mérida, Mexico",20.9674,-89.6237,16,"NA","MX","H"],
+  ["Guanajuato",21.0190,-101.2574,16,"NA","MX","H"],["Tulum pueblo",20.2114,-87.4654,16,"NA","MX","H"],
+  ["Fifth Avenue, Playa del Carmen",20.6296,-87.0739,16,"NA","MX","H"],["Sayulita, Mexico",20.8690,-105.4406,16,"NA","MX","H"],
+  ["Antigua Guatemala",14.5586,-90.7295,16,"NA","GT","H"],["Casco Viejo, Panama City",8.9517,-79.5343,16,"NA","PA","H"],
+  ["Granada, Nicaragua",11.9299,-85.9560,16,"NA","NI","H"],["San José, Costa Rica",9.9333,-84.0790,16,"NA","CR","H"],
+  ["the Zona Colonial, Santo Domingo",18.4726,-69.8830,16,"NA","DO","H"],
+  // ===== SOUTH AMERICA — famous =====
+  ["Christ the Redeemer, Rio",-22.9519,-43.2105,16,"SA","BR","E"],["Machu Picchu, Peru",-13.1631,-72.5450,16,"SA","PE","E"],
+  ["Iguazú Falls",-25.6953,-54.4367,14,"SA","AR","E"],["the Obelisco, Buenos Aires",-34.6037,-58.3816,15,"SA","AR","E"],
+  ["Salar de Uyuni, Bolivia",-20.1338,-67.4891,12,"SA","BO","E"],["Cartagena old town, Colombia",10.4236,-75.5518,16,"SA","CO","E"],
+  ["Sugarloaf Mountain, Rio",-22.9490,-43.1566,15,"SA","BR","E"],["Plaza de Armas, Cusco",-13.5165,-71.9788,16,"SA","PE","E"],
+  ["Quito old town",-0.2201,-78.5123,16,"SA","EC","E"],["the Perito Moreno glacier",-50.4967,-73.1377,14,"SA","AR","E"],
+  // ===== SOUTH AMERICA — streets =====
+  ["Vila Madalena, São Paulo",-23.5573,-46.6897,16,"SA","BR","H"],["Ipanema, Rio de Janeiro",-22.9840,-43.2034,16,"SA","BR","H"],
+  ["Santa Teresa, Rio de Janeiro",-22.9186,-43.1795,16,"SA","BR","H"],["La Boca, Buenos Aires",-34.6342,-58.3651,16,"SA","AR","H"],
+  ["San Telmo, Buenos Aires",-34.6180,-58.3731,16,"SA","AR","H"],["Palermo Soho, Buenos Aires",-34.5918,-58.4227,16,"SA","AR","H"],
+  ["Miraflores, Lima",-12.1219,-77.0294,16,"SA","PE","H"],["Barranco, Lima",-12.1464,-77.0208,16,"SA","PE","H"],
+  ["Bellavista, Santiago",-33.4254,-70.6416,16,"SA","CL","H"],["El Poblado, Medellín",6.2100,-75.5693,16,"SA","CO","H"],
+  ["La Candelaria, Bogotá",4.5981,-74.0738,16,"SA","CO","H"],["La Mariscal, Quito",-0.2001,-78.4900,16,"SA","EC","H"],
+  ["Centro Histórico, Montevideo",-34.9058,-56.1878,16,"SA","UY","H"],["Copacabana, Rio de Janeiro",-22.9711,-43.1822,16,"SA","BR","H"],
+  ["Leblon, Rio de Janeiro",-22.9840,-43.2200,16,"SA","BR","H"],["Lapa, Rio de Janeiro",-22.9130,-43.1800,16,"SA","BR","H"],
+  ["Pelourinho, Salvador",-12.9714,-38.5086,16,"SA","BR","H"],["Recife Antigo",-8.0631,-34.8711,16,"SA","BR","H"],
+  ["Jardins, São Paulo",-23.5650,-46.6600,16,"SA","BR","H"],["Liberdade, São Paulo",-23.5590,-46.6340,16,"SA","BR","H"],
+  ["Curitiba",-25.4284,-49.2733,16,"SA","BR","H"],["Recoleta, Buenos Aires",-34.5875,-58.3935,16,"SA","AR","H"],
+  ["Puerto Madero, Buenos Aires",-34.6110,-58.3630,16,"SA","AR","H"],["Mendoza",-32.8895,-68.8458,16,"SA","AR","H"],
+  ["Córdoba, Argentina",-31.4201,-64.1888,16,"SA","AR","H"],["Rosario",-32.9468,-60.6393,16,"SA","AR","H"],
+  ["Bariloche",-41.1335,-71.3103,16,"SA","AR","H"],["Cerro Alegre, Valparaíso",-33.0400,-71.6270,16,"SA","CL","H"],
+  ["Viña del Mar",-33.0245,-71.5518,16,"SA","CL","H"],["Lastarria, Santiago",-33.4380,-70.6390,16,"SA","CL","H"],
+  ["Arequipa",-16.3989,-71.5350,16,"SA","PE","H"],["the Malecón, Guayaquil",-2.1926,-79.8807,16,"SA","EC","H"],
+  ["Cuenca, Ecuador",-2.8974,-79.0045,16,"SA","EC","H"],["Punta del Este",-34.9600,-54.9500,16,"SA","UY","H"],
+  ["Colonia del Sacramento",-34.4720,-57.8440,16,"SA","UY","H"],["Asunción",-25.2822,-57.6351,16,"SA","PY","H"],
+  ["La Paz, Bolivia",-16.4957,-68.1335,16,"SA","BO","H"],["Santa Cruz de la Sierra",-17.7833,-63.1821,16,"SA","BO","H"],
+  ["Comuna 13, Medellín",6.2529,-75.6190,16,"SA","CO","H"],["Zona Rosa, Bogotá",4.6640,-74.0561,16,"SA","CO","H"],
+  // ===== AFRICA — famous =====
+  ["the Pyramids of Giza, Egypt",29.9792,31.1342,15,"AF","EG","E"],["Table Mountain, Cape Town",-33.9628,18.4098,13,"AF","ZA","E"],
+  ["Victoria Falls",-17.9243,25.8572,14,"AF","ZM","E"],["the Merzouga dunes, Sahara",31.0996,-4.0142,13,"AF","MA","E"],
+  ["the Marrakech medina, Morocco",31.6295,-7.9811,16,"AF","MA","E"],["the Pyramids of Meroë, Sudan",16.9377,33.7490,15,"AF","SD","E"],
+  ["the Sphinx, Giza",29.9753,31.1376,16,"AF","EG","E"],["Karnak Temple, Luxor",25.7188,32.6573,15,"AF","EG","E"],
+  ["the Cape of Good Hope",-34.3568,18.4740,14,"AF","ZA","E"],["Boulders Beach penguins, Cape Town",-34.1975,18.4512,16,"AF","ZA","E"],
+  // ===== AFRICA — streets =====
+  ["Bo-Kaap, Cape Town",-33.9253,18.4146,16,"AF","ZA","H"],["Woodstock, Cape Town",-33.9295,18.4487,16,"AF","ZA","H"],
+  ["Melville, Johannesburg",-26.1869,27.9981,16,"AF","ZA","H"],["Westlands, Nairobi",-1.2673,36.8023,16,"AF","KE","H"],
+  ["Osu, Accra",5.5587,-0.1666,16,"AF","GH","H"],["Gueliz, Marrakech",31.6254,-7.9986,16,"AF","MA","H"],
+  ["Sidi Bou Said, Tunisia",36.8704,10.3421,16,"AF","TN","H"],["Stellenbosch, South Africa",-33.9309,18.8647,16,"AF","ZA","H"],
+  ["Camps Bay, Cape Town",-33.9506,18.3775,16,"AF","ZA","H"],["Sea Point, Cape Town",-33.9180,18.3840,16,"AF","ZA","H"],
+  ["Sandton, Johannesburg",-26.1076,28.0567,16,"AF","ZA","H"],["Maboneng, Johannesburg",-26.2045,28.0570,16,"AF","ZA","H"],
+  ["the Durban beachfront",-29.8587,31.0218,16,"AF","ZA","H"],["Pretoria",-25.7479,28.2293,16,"AF","ZA","H"],
+  ["Franschhoek",-33.9100,19.1200,16,"AF","ZA","H"],["Knysna",-34.0363,23.0471,16,"AF","ZA","H"],
+  ["Gqeberha (Port Elizabeth)",-33.9608,25.6022,16,"AF","ZA","H"],["Kigali",-1.9536,30.0605,16,"AF","RW","H"],
+  ["Kampala",0.3136,32.5811,16,"AF","UG","H"],["Nairobi CBD",-1.2864,36.8172,16,"AF","KE","H"],
+  ["Mombasa old town",-4.0620,39.6790,16,"AF","KE","H"],["Victoria Island, Lagos",6.4281,3.4219,16,"AF","NG","H"],
+  ["Jamestown, Accra",5.5320,-0.2130,16,"AF","GH","H"],["Plateau, Dakar",14.6690,-17.4330,16,"AF","SN","H"],
+  ["Gaborone",-24.6282,25.9231,16,"AF","BW","H"],["Windhoek",-22.5609,17.0658,16,"AF","NA","H"],
+  ["Swakopmund",-22.6784,14.5258,16,"AF","NA","H"],["the Tunis medina",36.7981,10.1715,16,"AF","TN","H"],
+  ["Sousse medina",35.8256,10.6412,16,"AF","TN","H"],
+  // ===== OCEANIA — famous =====
+  ["the Sydney Opera House",-33.8568,151.2153,17,"OC","AU","E"],["Uluru, Australia",-25.3444,131.0369,13,"OC","AU","E"],
+  ["Bondi Beach, Sydney",-33.8908,151.2743,16,"OC","AU","E"],["the Twelve Apostles, Australia",-38.6662,143.1044,14,"OC","AU","E"],
+  ["Queenstown, New Zealand",-45.0312,168.6626,13,"OC","NZ","E"],["the Sydney Harbour Bridge",-33.8523,151.2108,16,"OC","AU","E"],
+  ["Federation Square, Melbourne",-37.8180,144.9691,17,"OC","AU","E"],["Milford Sound, New Zealand",-44.6717,167.9250,14,"OC","NZ","E"],
+  ["Lake Tekapo, New Zealand",-44.0046,170.4770,14,"OC","NZ","E"],
+  // ===== OCEANIA — streets =====
+  ["Surry Hills, Sydney",-33.8832,151.2107,16,"OC","AU","H"],["Fitzroy, Melbourne",-37.7962,144.9791,16,"OC","AU","H"],
+  ["St Kilda, Melbourne",-37.8679,144.9754,16,"OC","AU","H"],["New Farm, Brisbane",-27.4659,153.0453,16,"OC","AU","H"],
+  ["Fremantle, Perth",-32.0549,115.7484,16,"OC","AU","H"],["Salamanca, Hobart",-42.8860,147.3310,16,"OC","AU","H"],
+  ["Cuba Street, Wellington",-41.2959,174.7741,16,"OC","NZ","H"],["Ponsonby, Auckland",-36.8610,174.7471,16,"OC","NZ","H"],
+  ["Christchurch central",-43.5321,172.6363,16,"OC","NZ","H"],["Auckland waterfront",-36.8485,174.7633,16,"OC","NZ","H"],
+  ["Manly, Sydney",-33.7969,151.2855,16,"OC","AU","H"],["Newtown, Sydney",-33.8983,151.1785,16,"OC","AU","H"],
+  ["Chapel Street, Melbourne",-37.8470,144.9930,16,"OC","AU","H"],["Lygon Street, Carlton",-37.7987,144.9670,16,"OC","AU","H"],
+  ["Brunswick, Melbourne",-37.7670,144.9600,16,"OC","AU","H"],["Rundle Mall, Adelaide",-34.9230,138.6010,16,"OC","AU","H"],
+  ["Glenelg, Adelaide",-34.9800,138.5150,16,"OC","AU","H"],["Surfers Paradise, Gold Coast",-28.0027,153.4300,16,"OC","AU","H"],
+  ["Byron Bay",-28.6420,153.6120,16,"OC","AU","H"],["the Cairns Esplanade",-16.9186,145.7781,16,"OC","AU","H"],
+  ["Darwin",-12.4634,130.8456,16,"OC","AU","H"],["Canberra",-35.2809,149.1300,16,"OC","AU","H"],
+  ["Battery Point, Hobart",-42.8890,147.3300,16,"OC","AU","H"],["the Art Deco quarter, Napier",-39.4928,176.9120,16,"OC","NZ","H"],
+  ["Dunedin",-45.8788,170.5028,16,"OC","NZ","H"],["Rotorua",-38.1368,176.2497,16,"OC","NZ","H"],
+  ["Nelson, New Zealand",-41.2706,173.2840,16,"OC","NZ","H"],["Akaroa",-43.8035,172.9680,16,"OC","NZ","H"],
+  ["Suva, Fiji",-18.1416,178.4419,16,"OC","FJ","H"],
+  // ===== ISRAEL =====
+  ["the Old City, Jerusalem",31.7767,35.2345,17,"AS","IL","E"],["the Tel Aviv coast",32.0809,34.7681,16,"AS","IL","E"],
+  ["the Baháʼí Gardens, Haifa",32.8156,34.9871,17,"AS","IL","E"],["Masada",31.3157,35.3539,16,"AS","IL","E"],
+  ["the Dead Sea",31.5590,35.4732,13,"AS","IL","E"],["the Sea of Galilee",32.8000,35.5900,12,"AS","IL","E"],
+  ["Makhtesh Ramon",30.6090,34.8060,13,"AS","IL","E"],["Caesarea, Israel",32.5020,34.8930,16,"AS","IL","E"],
+  ["Akko old city",32.9226,35.0687,16,"AS","IL","E"],["Beit She'an ruins",32.4970,35.4970,16,"AS","IL","E"],
+  ["Florentin, Tel Aviv",32.0548,34.7733,16,"AS","IL","H"],["Jaffa",32.0513,34.7520,16,"AS","IL","H"],
+  ["Nazareth",32.6996,35.3035,16,"AS","IL","H"],["Beer Sheva",31.2516,34.7915,16,"AS","IL","H"],
+  ["Rothschild Boulevard, Tel Aviv",32.0644,34.7749,16,"AS","IL","H"],["Dizengoff Street, Tel Aviv",32.0777,34.7739,16,"AS","IL","H"],
+  ["the Carmel Market, Tel Aviv",32.0684,34.7681,16,"AS","IL","H"],["Neve Tzedek, Tel Aviv",32.0620,34.7645,16,"AS","IL","H"],
+  ["Sarona, Tel Aviv",32.0719,34.7864,16,"AS","IL","H"],["the Jaffa flea market",32.0538,34.7570,16,"AS","IL","H"],
+  ["Mahane Yehuda market, Jerusalem",31.7853,35.2123,16,"AS","IL","H"],["Ein Kerem, Jerusalem",31.7650,35.1620,16,"AS","IL","H"],
+  ["the German Colony, Jerusalem",31.7620,35.2190,16,"AS","IL","H"],["the German Colony, Haifa",32.8180,34.9885,16,"AS","IL","H"],
+  ["the Eilat promenade",29.5510,34.9530,16,"AS","IL","H"],["Tiberias",32.7940,35.5320,16,"AS","IL","H"],
+  ["Safed old city",32.9646,35.4960,16,"AS","IL","H"],["Zichron Ya'akov",32.5730,34.9520,16,"AS","IL","H"],
+  ["Rosh Pinna",32.9680,35.5430,16,"AS","IL","H"],["Mitzpe Ramon",30.6100,34.8010,16,"AS","IL","H"],
+  ["the Herzliya marina",32.1630,34.7970,16,"AS","IL","H"],["Netanya",32.3320,34.8530,16,"AS","IL","H"],
+  ["Ashdod",31.7920,34.6390,16,"AS","IL","H"],["the Ashkelon marina",31.6810,34.5540,16,"AS","IL","H"],
+  ["Ramat Gan",32.0840,34.8030,16,"AS","IL","H"],["Rehovot",31.8940,34.8090,16,"AS","IL","H"],
+  ["Modi'in",31.8980,35.0100,16,"AS","IL","H"],["Nahariya",33.0060,35.0940,16,"AS","IL","H"],
+  ["Hadera",32.4340,34.9190,16,"AS","IL","H"],["Kfar Saba",32.1750,34.9070,16,"AS","IL","H"],
+  ["Ra'anana",32.1840,34.8710,16,"AS","IL","H"]
 ];
 
-const S={mode:"solo",cj:"create",region:"world",rounds:5,roundTime:180,code:"",round:0,total:0,results:[],answer:null,guess:null,
-  timer:null,timeLeft:0,exMap:null,gMap:null,rMap:null,gMarker:null,order:[],orderPtr:0,name:"",slug:"",unsub:null};
+const S={mode:"solo",cj:"create",region:"world",diff:"normal",rounds:5,roundTime:180,code:"",round:0,total:0,results:[],answer:null,guess:null,
+  timer:null,timeLeft:0,exMap:null,gMap:null,rMap:null,gMarker:null,order:[],orderPtr:0,name:"",slug:"",unsub:null,unsubRoom:null,
+  hintLevel:0,hintCost:0};
 
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));$(id).classList.add("on");}
@@ -595,17 +819,23 @@ function scoreFor(km){return Math.round(5000*Math.exp(-km/2000));}
 function tierFor(km){if(km<1)return"BULLSEYE";if(km<25)return"EXCELLENT";if(km<150)return"GREAT";
   if(km<1000)return"SOLID";if(km<3000)return"IN THE REGION";if(km<7000)return"WRONG CONTINENT?";return"WAY OFF";}
 function fmtDist(km){return km<1?`${Math.round(km*1000)} m`:km<100?`${km.toFixed(1)} km`:`${Math.round(km).toLocaleString()} km`;}
+const CONT_LABEL={EU:"Europe",AS:"Asia",NA:"North America",SA:"South America",AF:"Africa",OC:"Oceania"};
+function countryName(cc){ try{ return new Intl.DisplayNames(["en"],{type:"region"}).of(cc)||cc; }catch(e){ return cc; } }
+function flagEmoji(cc){ if(!cc||cc.length!==2) return ""; return String.fromCodePoint(...[...cc.toUpperCase()].map(c=>127397+c.charCodeAt(0))); }
 
-// places matching the chosen region
-function poolFor(region){
-  if(region==="IL") return [...PLACES.keys()].filter(i=>PLACES[i][5]==="IL");
-  if(!region||region==="world") return [...PLACES.keys()];
-  return [...PLACES.keys()].filter(i=>PLACES[i][4]===region);
+// places matching the chosen region + difficulty
+function poolFor(region,diff){
+  let idxs=[...PLACES.keys()];
+  if(region==="IL") idxs=idxs.filter(i=>PLACES[i][5]==="IL");
+  else if(region&&region!=="world") idxs=idxs.filter(i=>PLACES[i][4]===region);
+  if(diff==="easy"){const f=idxs.filter(i=>PLACES[i][6]==="E");if(f.length>=3)idxs=f;}
+  else if(diff==="hard"){const f=idxs.filter(i=>PLACES[i][6]==="H");if(f.length>=3)idxs=f;}
+  return idxs;
 }
-// build a deterministic shuffled order of places from the seed + region
-function buildOrder(code,region){
-  let pool=poolFor(region); if(!pool.length) pool=[...PLACES.keys()];
-  const rng=mulberry32(hashStr(code+"|order|"+(region||"world")));
+// build a deterministic shuffled order of places from the seed + region + difficulty
+function buildOrder(code,region,diff){
+  let pool=poolFor(region,diff); if(!pool.length) pool=[...PLACES.keys()];
+  const rng=mulberry32(hashStr(code+"|order|"+(region||"world")+"|"+(diff||"normal")));
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
   return pool;
 }
@@ -623,6 +853,8 @@ $("modeSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{
 $("cjSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{
   $("cjSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.cj=b.dataset.cj;
   $("joinField").style.display=S.cj==="join"?"block":"none";});
+$("diffSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+  $("diffSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.diff=b.dataset.d;});
 
 // Reject if a Firestore call hangs (e.g. a network filter silently blocks firestore.googleapis.com)
 function withTimeout(promise,ms,label){
@@ -635,7 +867,7 @@ $("startBtn").onclick=async ()=>{
   if(S.mode==="solo"){
     S.code=makeCode();
     S.region=$("regionSel").value;
-    S.order=buildOrder(S.code,S.region);
+    S.order=buildOrder(S.code,S.region,S.diff);
     S.round=0;S.total=0;S.results=[];S.orderPtr=0;
     show("game");startRound();
     return;
@@ -670,16 +902,16 @@ $("startBtn").onclick=async ()=>{
     catch(e){ netFail(e); return; }
     if(!snap.exists()){ toast("No challenge with that code."); return; }
     const d=snap.data();
-    S.code=code;S.rounds=d.rounds||5;S.roundTime=(d.roundTime!=null?d.roundTime:180);S.region=d.region||"world";
-    S.order=buildOrder(S.code,S.region);
+    S.code=code;S.rounds=d.rounds||5;S.roundTime=(d.roundTime!=null?d.roundTime:180);S.region=d.region||"world";S.diff=d.diff||"normal";
+    S.order=buildOrder(S.code,S.region,S.diff);
     enterLobby();
   } else {
     const code=makeCode();
     S.region=$("regionSel").value;
     try{
-      await withTimeout(setDoc(doc(db,"rooms",code),{rounds:S.rounds,roundTime:S.roundTime,region:S.region,host:S.name,createdAt:serverTimestamp()}),8000,"write");
+      await withTimeout(setDoc(doc(db,"rooms",code),{rounds:S.rounds,roundTime:S.roundTime,region:S.region,diff:S.diff,host:S.name,createdAt:serverTimestamp()}),8000,"write");
     }catch(e){ netFail(e); return; }
-    S.code=code;S.order=buildOrder(S.code,S.region);
+    S.code=code;S.order=buildOrder(S.code,S.region,S.diff);
     enterLobby();
   }
   }finally{
@@ -690,14 +922,15 @@ $("startBtn").onclick=async ()=>{
 
 /* ---- lobby + live leaderboard ---- */
 const REGION_LABEL={world:"Whole world",EU:"Europe",AS:"Asia",NA:"North America",SA:"South America",AF:"Africa",OC:"Oceania",IL:"Israel"};
+const DIFF_LABEL={easy:"Easy",normal:"Normal",hard:"Hard"};
 function enterLobby(){
   $("lobbyCode").textContent=S.code;
-  $("lobbyMeta").textContent=`${S.rounds} rounds · ${S.roundTime?S.roundTime/60+" min":"no timer"} · ${REGION_LABEL[S.region]||"Whole world"}`;
+  $("lobbyMeta").textContent=`${S.rounds} rounds · ${S.roundTime?S.roundTime/60+" min":"no timer"} · ${REGION_LABEL[S.region]||"Whole world"} · ${DIFF_LABEL[S.diff]||"Normal"}`;
   listenBoard($("leaderboard"));
   show("lobby");
 }
 $("copyLobbyCode").onclick=()=>{navigator.clipboard?.writeText(S.code).then(()=>toast("Code copied!"),()=>toast("Code: "+S.code));};
-$("lobbyBack").onclick=()=>{ if(S.unsub){S.unsub();S.unsub=null;} show("menu"); };
+$("lobbyBack").onclick=()=>{ if(S.unsub){S.unsub();S.unsub=null;} if(S.unsubRoom){S.unsubRoom();S.unsubRoom=null;} show("menu"); };
 $("playBtn").onclick=()=>{ S.round=0;S.total=0;S.results=[];S.orderPtr=0; show("game"); startRound(); };
 
 function listenBoard(container){
@@ -707,6 +940,7 @@ function listenBoard(container){
     const rows=[];snap.forEach(d=>rows.push(d.data()));
     renderBoard(container,rows);
     const fb=$("finalBoard"); if(fb && fb!==container) renderBoard(fb,rows);
+    if($("final").classList.contains("on")) renderPodium(rows);
   },err=>{console.error(err);container.innerHTML='<div class="lbempty">Leaderboard unavailable — check Firestore rules.</div>';});
 }
 function renderBoard(el,rows){
@@ -745,6 +979,8 @@ function placePano(p, idx){
 
 async function startRound(){
   S.guess=null;
+  S.hintLevel=0;S.hintCost=0;
+  const hb=$("hintBtn"); hb.textContent="💡 Hint (−500)"; hb.disabled=false; hb.style.display="block";
   if(S.gMarker && S.gMap){ S.gMap.removeLayer(S.gMarker); S.gMarker=null; }
   if(S.gMap){ S.gMap.setView([20,0],2); }
   $("confirmGuess").disabled=true;
@@ -758,7 +994,7 @@ async function startRound(){
   try{ await loadGmaps(); }
   catch(e){
     const p=PLACES[S.order[S.orderPtr % S.order.length]];
-    S.answer={name:p[0],lat:p[1],lng:p[2]};
+    S.answer={name:p[0],lat:p[1],lng:p[2],cont:p[4],cc:p[5]||""};
     $("satWarnMsg").textContent="Couldn't load Google Maps (check the API key) — you can still place a guess.";
     startTimer(); return;
   }
@@ -771,7 +1007,7 @@ async function startRound(){
     S.orderPtr++; attempts++;
     const p=PLACES[placeIdx]; lastP=p;
     // the target you're guessing is the landmark's location
-    S.answer={name:p[0],lat:p[1],lng:p[2]};
+    S.answer={name:p[0],lat:p[1],lng:p[2],cont:p[4],cc:p[5]||""};
     const ok=await placePano(p, placeIdx);
     if(ok){ shown=true; break; }
     // no imagery here → skip to the next seeded place automatically
@@ -779,7 +1015,7 @@ async function startRound(){
 
   if(!shown){
     const p=lastP || PLACES[S.order[0]];
-    S.answer={name:p[0],lat:p[1],lng:p[2]};
+    S.answer={name:p[0],lat:p[1],lng:p[2],cont:p[4],cc:p[5]||""};
     $("satWarnMsg").textContent="No Street View nearby — you can still place a guess.";
     startTimer(); return;
   }
@@ -798,6 +1034,19 @@ function startTimer(){
 }
 function paintTimer(){const m=Math.floor(S.timeLeft/60),s=S.timeLeft%60;
   $("timerVal").textContent=`${m}:${String(s).padStart(2,"0")}`;$("timer").classList.toggle("low",S.timeLeft<=20);}
+
+/* hints — continent costs 500, country another 1,500 */
+$("hintBtn").onclick=()=>{
+  if(!S.answer) return;
+  if(S.hintLevel===0){
+    S.hintLevel=1; S.hintCost=500;
+    $("hintBtn").textContent=`🌍 ${CONT_LABEL[S.answer.cont]||"?"} · country? (−1,500)`;
+  } else if(S.hintLevel===1){
+    S.hintLevel=2; S.hintCost=2000;
+    $("hintBtn").textContent=`${flagEmoji(S.answer.cc)} ${countryName(S.answer.cc)}`;
+    $("hintBtn").disabled=true;
+  }
+};
 
 /* guess */
 $("exitGame").onclick=()=>{ clearInterval(S.timer); $("guessLayer").classList.remove("on"); show("menu"); };
@@ -823,9 +1072,10 @@ function openGuessMap(forced){
 $("confirmGuess").onclick=()=>{
   if(!S.guess)return;
   clearInterval(S.timer);
-  const km=haversine(S.guess,S.answer),pts=scoreFor(km),tier=tierFor(km);
+  const km=haversine(S.guess,S.answer),tier=tierFor(km);
+  const pts=Math.max(0,scoreFor(km)-S.hintCost);
   S.total+=pts;
-  S.results.push({round:S.round+1,km,pts,name:S.answer.name});
+  S.results.push({round:S.round+1,km,pts,name:S.answer.name,cc:S.answer.cc});
   if(S.mode==="friends"&&db){
     setDoc(doc(db,"rooms",S.code,"r"+S.round+"guesses",S.slug),
       {name:S.name,lat:S.guess.lat,lng:S.guess.lng,pts,km}).catch(e=>console.warn("guess save failed",e));
@@ -833,16 +1083,55 @@ $("confirmGuess").onclick=()=>{
   showResult(km,pts,tier);
 };
 
+/* animations */
+function animateNum(el,to,dur){
+  const t0=performance.now();
+  (function f(t){
+    const k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3);
+    el.textContent=Math.round(to*e).toLocaleString();
+    if(k<1)requestAnimationFrame(f);
+  })(t0);
+}
+function confettiBurst(){
+  const c=$("fx"),x=c.getContext("2d");
+  c.width=innerWidth;c.height=innerHeight;
+  const cols=["#36D6C3","#FFB454","#9FC7FF","#E879F9","#5EEAD4","#FF6B6B"];
+  const ps=Array.from({length:140},()=>({x:c.width/2+(Math.random()-.5)*140,y:c.height*0.35,
+    vx:(Math.random()-.5)*11,vy:-(4+Math.random()*9),s:4+Math.random()*5,
+    col:cols[Math.floor(Math.random()*cols.length)],rot:Math.random()*Math.PI,vr:(Math.random()-.5)*.3}));
+  const t0=performance.now();
+  (function f(t){
+    const k=(t-t0)/1900;
+    x.clearRect(0,0,c.width,c.height);
+    if(k>=1)return;
+    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.26;p.rot+=p.vr;
+      x.save();x.translate(p.x,p.y);x.rotate(p.rot);x.globalAlpha=Math.max(0,1-k*1.1);
+      x.fillStyle=p.col;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.62);x.restore();});
+    requestAnimationFrame(f);
+  })(t0);
+}
+
 /* result */
 function showResult(km,pts,tier){
   show("result");
   $("rResRound").textContent=S.round+1;
   $("rTier").textContent=tier;
-  $("rScore").textContent=pts.toLocaleString();
-  $("rBar").style.width=(pts/5000*100)+"%";
+  $("rScore").textContent="0";
+  animateNum($("rScore"),pts,900);
+  const bar=$("rBar");
+  bar.style.transition="none";bar.style.width="0%";void bar.offsetWidth;
+  bar.style.transition="";bar.style.width=(pts/5000*100)+"%";
   $("rPlace").textContent=S.answer.name;
+  $("rFlag").textContent=flagEmoji(S.answer.cc);
   $("rDist").textContent=fmtDist(km);
+  $("rHintLine").style.display=S.hintCost>0?"flex":"none";
+  if(S.hintCost>0)$("rHintVal").textContent="−"+S.hintCost.toLocaleString();
   $("rTotal").textContent=S.total.toLocaleString();
+  $("rCompare").style.display="none";
+  const big=document.querySelector("#result .bignum");
+  big.classList.remove("shake");
+  if(km<50) setTimeout(confettiBurst,500);
+  else if(km>4000){ void big.offsetWidth; big.classList.add("shake"); }
   $("nextBtn").textContent=(S.round+1>=S.rounds)?"See final score →":"Next round →";
   setTimeout(async ()=>{
     if(!S.rMap){S.rMap=L.map("rmap",{attributionControl:false,zoomControl:false}).setView([0,0],2);
@@ -850,21 +1139,34 @@ function showResult(km,pts,tier){
     S.rMap.eachLayer(l=>{if(l instanceof L.Marker||l instanceof L.Polyline||l instanceof L.CircleMarker)S.rMap.removeLayer(l);});
     const g=[S.guess.lat,S.guess.lng],a=[S.answer.lat,S.answer.lng];
     const bounds=[g,a];
-    L.circleMarker(g,{radius:7,color:"#36D6C3",fillColor:"#36D6C3",fillOpacity:1,weight:2}).addTo(S.rMap).bindTooltip("Your guess");
+    L.circleMarker(g,{radius:7,color:"#36D6C3",fillColor:"#36D6C3",fillOpacity:1,weight:2}).addTo(S.rMap)
+      .bindTooltip(S.mode==="friends"?"You":"Your guess",S.mode==="friends"?{permanent:true,direction:"top",className:"gtip"}:{});
     L.circleMarker(a,{radius:7,color:"#FFB454",fillColor:"#FFB454",fillOpacity:1,weight:2}).addTo(S.rMap).bindTooltip(S.answer.name);
     L.polyline([g,a],{color:"#FFB454",weight:2,dashArray:"6 6",opacity:.85}).addTo(S.rMap);
     if(S.mode==="friends"&&db){
       try{
         const snap=await getDocs(collection(db,"rooms",S.code,"r"+S.round+"guesses"));
+        const rows=[{name:S.name,km,pts,me:true}];
         snap.forEach(d=>{
           if(d.id===S.slug)return;
           const p=d.data();
+          rows.push({name:p.name,km:p.km,pts:p.pts});
           const loc=[p.lat,p.lng];
           bounds.push(loc);
           L.circleMarker(loc,{radius:6,color:"#E879F9",fillColor:"#E879F9",fillOpacity:.85,weight:2})
-            .addTo(S.rMap).bindTooltip(esc(p.name)+" · "+fmtDist(p.km));
+            .addTo(S.rMap).bindTooltip(esc(p.name),{permanent:true,direction:"top",className:"gtip"});
           L.polyline([loc,a],{color:"#E879F9",weight:1.5,dashArray:"4 5",opacity:.6}).addTo(S.rMap);
         });
+        if(rows.length>1){
+          rows.sort((x,y)=>(y.pts||0)-(x.pts||0));
+          $("rCompare").innerHTML='<div class="eyebrow" style="margin:2px 0 8px;">This round</div>'+
+            rows.map((r,i)=>`<div class="lbrow${r.me?" me":""}" style="padding:8px 12px;margin-bottom:6px;">
+              <span class="rank">${i===0?"🥇":i+1}</span>
+              <span class="nm">${esc(r.name)}${r.me?" (you)":""}</span>
+              <span class="hint mono">${fmtDist(r.km||0)}</span>
+              <span class="pts mono">${(r.pts||0).toLocaleString()}</span></div>`).join("");
+          $("rCompare").style.display="block";
+        }
       }catch(e){console.warn("Couldn't load other guesses",e);}
     }
     S.rMap.invalidateSize();S.rMap.fitBounds(L.latLngBounds(bounds).pad(0.4),{maxZoom:7});
@@ -880,6 +1182,8 @@ async function showFinal(){
   $("fMax").textContent=max.toLocaleString();
   $("fBar").style.width=(S.total/max*100)+"%";
 
+  if(S.total>=max*0.72) setTimeout(confettiBurst,700);
+
   if(S.mode==="friends"){
     $("fEyebrow").textContent="Your run is in";
     $("fRounds").style.display="none";
@@ -887,6 +1191,16 @@ async function showFinal(){
     $("againBtn").style.display="none";
     $("finalLobbyBack").style.display="block";
     $("finalStandings").style.display="block";
+    $("rematchBtn").style.display="flex";
+    $("joinRematch").style.display="none";
+    // watch the room — if anyone starts a rematch, offer to join it
+    if(S.unsubRoom){S.unsubRoom();S.unsubRoom=null;}
+    try{
+      S.unsubRoom=onSnapshot(doc(db,"rooms",S.code),snap=>{
+        const d=snap.data();
+        if(d&&d.nextCode){ $("joinRematch")._code=d.nextCode; $("joinRematch").style.display="flex"; $("rematchBtn").style.display="none"; }
+      });
+    }catch(e){}
     $("fSaveMsg").style.display="block";
     $("fSaveMsg").textContent="Saving to the leaderboard…";
     listenBoard($("finalBoard"));
@@ -909,11 +1223,95 @@ async function showFinal(){
   $("againBtn").style.display="block";
   $("finalLobbyBack").style.display="none";
   $("finalStandings").style.display="none";
+  $("rematchBtn").style.display="none";
+  $("joinRematch").style.display="none";
   $("fSaveMsg").style.display="none";
   $("fRounds").innerHTML=S.results.map(r=>
-    `<div class="roundrow"><span>R${r.round} · ${r.name} — ${fmtDist(r.km)}</span><span class="mono">${r.pts.toLocaleString()}</span></div>`).join("");
+    `<div class="roundrow"><span>R${r.round} ${flagEmoji(r.cc)} ${r.name} — ${fmtDist(r.km)}</span><span class="mono">${r.pts.toLocaleString()}</span></div>`).join("");
   $("fCode").textContent=S.code;
 }
+
+/* ---- podium (top 3) ---- */
+function renderPodium(rows){
+  const el=$("podium");
+  if(!rows||rows.length<2){el.style.display="none";return;}
+  const top=rows.slice(0,3);
+  const order=top.length===3?[1,0,2]:[0,1]; // silver, gold, bronze layout
+  const medals=["🥇","🥈","🥉"], hts=[96,68,52];
+  el.innerHTML=order.map(i=>{
+    const r=top[i]; if(!r)return"";
+    const me=slugify(r.name)===S.slug;
+    return `<div class="podcol">
+      <div class="podname${me?" me":""}">${esc(r.name)}</div>
+      <div class="podpts mono">${(r.total||0).toLocaleString()}</div>
+      <div class="podblk${i===0?" gold":""}" style="height:${hts[i]}px;">${medals[i]}</div>
+    </div>`;
+  }).join("");
+  el.style.display="flex";
+  if(slugify(top[0].name)===S.slug && !S._party){ S._party=true; setTimeout(confettiBurst,400); }
+}
+
+/* ---- share card ---- */
+$("shareBtn").onclick=async ()=>{
+  const W=1080,H=1080,c=document.createElement("canvas");c.width=W;c.height=H;
+  const x=c.getContext("2d");
+  x.fillStyle="#0B1220";x.fillRect(0,0,W,H);
+  let g=x.createRadialGradient(W*0.15,H*0.1,60,W*0.15,H*0.1,700);
+  g.addColorStop(0,"rgba(31,127,134,.55)");g.addColorStop(1,"transparent");x.fillStyle=g;x.fillRect(0,0,W,H);
+  g=x.createRadialGradient(W*0.9,H*0.95,60,W*0.9,H*0.95,700);
+  g.addColorStop(0,"rgba(74,58,130,.55)");g.addColorStop(1,"transparent");x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.textAlign="center";
+  x.fillStyle="#5EEAD4";x.font="600 34px monospace";x.letterSpacing="12px";
+  x.fillText("STREET VIEW CHALLENGE",W/2,150);
+  x.letterSpacing="0px";
+  x.fillStyle="#E8EDF4";x.font="700 64px monospace";
+  x.fillText("souvlaki_ha_hamod",W/2,240);
+  x.fillStyle="#FFB454";x.font="700 210px monospace";
+  x.fillText(S.total.toLocaleString(),W/2,540);
+  x.fillStyle="#7C8AA5";x.font="500 44px monospace";
+  x.fillText("/ "+(S.rounds*5000).toLocaleString()+" pts",W/2,615);
+  x.fillStyle="#E8EDF4";x.font="500 40px sans-serif";
+  const meta=`${S.rounds} rounds · ${REGION_LABEL[S.region]||"Whole world"} · ${DIFF_LABEL[S.diff]||"Normal"}`;
+  x.fillText(meta,W/2,720);
+  if(S.mode==="friends"){x.fillStyle="#9FC7FF";x.font="600 42px monospace";x.fillText("challenge  "+S.code,W/2,790);}
+  x.fillStyle="#5EEAD4";x.font="600 44px monospace";
+  x.fillText("▶  yanivvshlomo.github.io",W/2,940);
+  const text=`I scored ${S.total.toLocaleString()} pts in souvlaki_ha_hamod! 🌍 Play: https://yanivvshlomo.github.io/${S.mode==="friends"?" (challenge "+S.code+")":""}`;
+  try{
+    const blob=await new Promise(r=>c.toBlob(r,"image/png"));
+    const file=new File([blob],"souvlaki-score.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],text});
+    } else if(navigator.share){
+      await navigator.share({text});
+    } else {
+      await navigator.clipboard.writeText(text);toast("Copied! Paste it to your friends 📋");
+    }
+  }catch(e){ if(e&&e.name!=="AbortError"){ try{await navigator.clipboard.writeText(text);toast("Copied! Paste it to your friends 📋");}catch(_){} } }
+};
+
+/* ---- rematch ---- */
+function switchRoom(code){
+  if(S.unsubRoom){S.unsubRoom();S.unsubRoom=null;}
+  S.code=code;S.order=buildOrder(code,S.region,S.diff);
+  S.round=0;S.total=0;S.results=[];S.orderPtr=0;S._party=false;
+  enterLobby();
+}
+$("rematchBtn").onclick=async ()=>{
+  const b=$("rematchBtn");b.disabled=true;
+  const newCode=makeCode();
+  try{
+    await withTimeout(setDoc(doc(db,"rooms",newCode),{rounds:S.rounds,roundTime:S.roundTime,region:S.region,diff:S.diff,host:S.name,rematchOf:S.code,createdAt:serverTimestamp()}),8000,"write");
+    await withTimeout(setDoc(doc(db,"rooms",S.code),{nextCode:newCode},{merge:true}),8000,"write");
+  }catch(e){ toast("Couldn't start a rematch: "+((e&&e.message)||e)); b.disabled=false; return; }
+  b.disabled=false;
+  switchRoom(newCode);
+  toast("Rematch ready! Friends on the final screen get a join button.");
+};
+$("joinRematch").onclick=()=>{
+  const c=$("joinRematch")._code;
+  if(c) switchRoom(c);
+};
 $("copyCode").onclick=()=>{navigator.clipboard?.writeText(S.code).then(()=>toast("Code copied!"),()=>toast("Code: "+S.code));};
 $("againBtn").onclick=()=>show("menu");
 $("finalLobbyBack").onclick=()=>{ enterLobby(); };
