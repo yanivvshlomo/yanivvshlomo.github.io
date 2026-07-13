@@ -21,9 +21,9 @@
 
 <style>
   :root{
-    --abyss:#0E0A1F;--panel:#1A1236;--panel2:#251746;--ink:#F3ECFF;--muted:#A597C9;
-    --signal:#FF5C8A;--target:#FFC24B;--danger:#FF5C5C;--line:rgba(165,151,201,.24);
-    --shadow:0 18px 50px rgba(0,0,0,.6);
+    --abyss:#070B12;--panel:#0E1622;--panel2:#13202E;--ink:#E6F0F7;--muted:#6B7D93;
+    --signal:#22D3EE;--target:#F5A524;--danger:#FF5C5C;--line:rgba(34,211,238,.16);
+    --shadow:0 18px 50px rgba(0,0,0,.65);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;background:var(--abyss);color:var(--ink);
@@ -38,42 +38,49 @@
   .brand b{font-size:24px;font-weight:700;word-break:break-word;font-family:"JetBrains Mono",monospace;letter-spacing:-.02em;}
   .brand .tag{font-size:11px;color:var(--muted);letter-spacing:.32em;text-transform:uppercase;}
 
-  /* ---- modern accents ---- */
-  :root{--neon:#FF6FB5;--sky:#B98CFF;--warm:#FFCE6B;}
-  .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
-  .aurora::before,.aurora::after{content:"";position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;}
-  .aurora::before{width:62vw;height:62vw;background:radial-gradient(circle,#b5257e,transparent 62%);top:-12%;left:-16%;animation:drift1 20s ease-in-out infinite alternate;}
-  .aurora::after{width:58vw;height:58vw;background:radial-gradient(circle,#5a2fae,transparent 62%);bottom:-16%;right:-12%;animation:drift2 24s ease-in-out infinite alternate;}
-  @keyframes drift1{to{transform:translate(18%,12%) scale(1.1);}}
-  @keyframes drift2{to{transform:translate(-14%,-10%) scale(1.08);}}
+  /* ---- Recon HUD accents ---- */
+  :root{--neon:#22D3EE;--sky:#38BDF8;--warm:#F5A524;--grid:rgba(34,211,238,.06);}
+  /* faint mission-control grid + a soft cyan/amber glow drifting behind everything */
+  .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:44px 44px;}
+  .aurora::before,.aurora::after{content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.28;}
+  .aurora::before{width:60vw;height:60vw;background:radial-gradient(circle,#0e7490,transparent 62%);top:-14%;left:-18%;animation:drift1 22s ease-in-out infinite alternate;}
+  .aurora::after{width:52vw;height:52vw;background:radial-gradient(circle,#7a4a0f,transparent 64%);bottom:-16%;right:-14%;animation:drift2 26s ease-in-out infinite alternate;}
+  @keyframes drift1{to{transform:translate(16%,10%) scale(1.1);}}
+  @keyframes drift2{to{transform:translate(-12%,-8%) scale(1.08);}}
   .wrap{position:relative;z-index:2;}
-  .btn{box-shadow:0 10px 30px rgba(255,180,84,.22);}
-  .seg button.on{box-shadow:0 0 16px rgba(255,180,84,.3);}
-  .chip{box-shadow:0 0 22px rgba(94,234,212,.12);}
-  .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--neon);text-shadow:0 0 14px rgba(94,234,212,.4);}
-  .card{position:relative;background:rgba(20,29,45,.62);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
-    border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.5);}
-  .card::before{content:"";position:absolute;inset:0;border-radius:20px;padding:1px;background:linear-gradient(135deg,rgba(94,234,212,.5),rgba(159,199,255,.2) 40%,rgba(255,201,138,.25));
+  .btn{box-shadow:0 10px 30px rgba(34,211,238,.18);}
+  .seg button.on{box-shadow:0 0 16px rgba(34,211,238,.3);}
+  .chip{box-shadow:0 0 22px rgba(34,211,238,.12);}
+  .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--neon);text-shadow:0 0 14px rgba(34,211,238,.45);}
+  .card{position:relative;background:rgba(14,22,34,.66);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
+    border:1px solid rgba(34,211,238,.1);border-radius:16px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.55);}
+  .card::before{content:"";position:absolute;inset:0;border-radius:16px;padding:1px;background:linear-gradient(135deg,rgba(34,211,238,.55),rgba(56,189,248,.16) 45%,rgba(245,165,36,.3));
     -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
 
-  /* ---- INTRO (modern) ---- */
+  /* ---- INTRO (satellite recon) ---- */
   #intro{align-items:center;justify-content:center;background:transparent;}
-  .introwrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px;text-align:center;}
-  .orb{width:214px;height:214px;}
-  .orb .halo{fill:rgba(255,111,181,.18);filter:blur(16px);animation:halo 3.6s ease-in-out infinite;transform-origin:100px 100px;}
-  .orb .planet{filter:drop-shadow(0 0 26px rgba(255,92,138,.6));}
-  .orb .ringline{fill:none;stroke-width:1.6;opacity:.9;}
-  .orb .sat{fill:var(--warm);filter:drop-shadow(0 0 7px var(--warm));}
-  .orb .orbit{transform-origin:100px 100px;animation:orbit 9s linear infinite;}
-  @keyframes orbit{to{transform:rotate(360deg);}}
-  @keyframes halo{0%,100%{opacity:.5;transform:scale(1);}50%{opacity:1;transform:scale(1.06);}}
-  .loader{width:min(248px,68vw);display:flex;flex-direction:column;gap:9px;align-items:center;}
-  .loader .bar{width:100%;height:3px;border-radius:4px;background:rgba(255,255,255,.09);overflow:hidden;}
-  .loader .bar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--neon),var(--sky));box-shadow:0 0 12px rgba(255,111,181,.6);transition:width .55s ease;}
-  .loader .status{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+  .introwrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px;text-align:center;}
+  .globe{width:240px;height:240px;filter:drop-shadow(0 0 30px rgba(34,211,238,.25));}
+  .globe .gsphere{fill:rgba(34,211,238,.05);stroke:rgba(34,211,238,.35);stroke-width:1;}
+  .globe .gline{fill:none;stroke:rgba(34,211,238,.28);stroke-width:1;}
+  .globe .gland{fill:rgba(34,211,238,.14);stroke:rgba(34,211,238,.5);stroke-width:.8;}
+  .globe .gspin{transform-origin:120px 120px;animation:gspin 14s linear infinite;}
+  @keyframes gspin{to{transform:rotate(360deg);}}
+  .globe .sweep{transform-origin:120px 120px;animation:sweep 3.2s linear infinite;}
+  .globe .pin{fill:var(--warm);filter:drop-shadow(0 0 6px var(--warm));animation:pinpulse 2s ease-in-out infinite;}
+  @keyframes sweep{to{transform:rotate(360deg);}}
+  @keyframes pinpulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+  .coords{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;color:var(--neon);opacity:.8;}
+  .loader{width:min(280px,74vw);display:flex;flex-direction:column;gap:8px;align-items:stretch;}
+  .loader .bar{width:100%;height:2px;background:rgba(34,211,238,.12);overflow:hidden;}
+  .loader .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--neon),var(--warm));box-shadow:0 0 12px rgba(34,211,238,.7);transition:width .55s ease;}
+  .loader .status{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-align:left;}
+  .loader .status::before{content:"▸ ";color:var(--neon);}
   .ititle{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(30px,9.4vw,50px);letter-spacing:-.02em;word-break:break-word;
-    background:linear-gradient(95deg,#FF8FC0,#B98CFF 48%,#FFCE6B);-webkit-background-clip:text;background-clip:text;color:transparent;
-    filter:drop-shadow(0 2px 18px rgba(255,111,181,.34));opacity:0;transform:translateY(12px) scale(.98);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);margin:4px 0 0;}
+    background:linear-gradient(95deg,#7DF9FF,#22D3EE 45%,#F5A524);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 2px 18px rgba(34,211,238,.4));opacity:0;transform:translateY(12px) scale(.98);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);margin:4px 0 0;}
   .ititle.show{opacity:1;transform:none;}
   .credit{font-family:"Space Grotesk",sans-serif;font-size:14px;letter-spacing:.02em;color:var(--muted);opacity:0;transform:translateY(8px);transition:opacity .6s .12s,transform .6s .12s;}
   .credit.show{opacity:1;transform:none;}
@@ -81,13 +88,13 @@
   .isub{font-family:"Space Grotesk",sans-serif;font-size:10.5px;letter-spacing:.36em;text-transform:uppercase;color:rgba(124,138,165,.7);opacity:0;transition:opacity .6s .25s;}
   .isub.show{opacity:1;}
   .startbtn{margin-top:12px;padding:14px 34px;border:none;border-radius:999px;cursor:pointer;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:15px;letter-spacing:.03em;
-    color:#fff;background:linear-gradient(95deg,var(--neon),var(--sky));box-shadow:0 12px 32px rgba(255,111,181,.42);
+    color:#04121a;background:linear-gradient(95deg,var(--neon),var(--sky));box-shadow:0 12px 32px rgba(34,211,238,.45);
     opacity:0;transform:translateY(10px) scale(.96);transition:opacity .55s,transform .55s;}
   .startbtn.show{opacity:1;transform:none;}
   .startbtn:active{transform:translateY(1px) scale(.99);}
   label.fld{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;}
   .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
-    background:var(--signal);color:#fff;font-weight:700;border-radius:13px;padding:15px;font-size:16px;transition:transform .08s;}
+    background:var(--signal);color:#04121a;font-weight:700;border-radius:11px;padding:15px;font-size:16px;transition:transform .08s;}
   .btn:active{transform:translateY(1px);}
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
   .btn.teal{background:var(--target);color:#2a1a03;}
@@ -95,7 +102,7 @@
   .hint{font-size:12.5px;color:var(--muted);line-height:1.55;}
   .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:11px;overflow:hidden;}
   .seg button{flex:1;background:transparent;color:var(--muted);padding:11px 0;font-weight:600;font-size:14px;}
-  .seg button.on{background:var(--signal);color:#fff;}
+  .seg button.on{background:var(--signal);color:#04121a;}
   input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:11px;
     padding:13px 14px;font-size:15px;font-family:"JetBrains Mono",monospace;text-transform:uppercase;}
   input:focus{outline:none;border-color:var(--signal);}
@@ -161,8 +168,8 @@
   /* ---- 2.0 polish ---- */
   .screen.on>.wrap{animation:rise .38s cubic-bezier(.2,.7,.2,1);}
   @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
-  .btn{background:linear-gradient(135deg,#FF7AA8,#FF3D7F);transition:transform .08s,box-shadow .2s,filter .2s;}
-  .btn.teal{background:linear-gradient(135deg,#FFD57A,#FFB024);}
+  .btn{background:linear-gradient(135deg,#5AE7F7,#22D3EE);transition:transform .08s,box-shadow .2s,filter .2s;}
+  .btn.teal{background:linear-gradient(135deg,#F7BE55,#F5A524);}
   .btn.ghost{background:transparent;}
   .btn:active{transform:translateY(2px) scale(.995);}
   input:focus{box-shadow:0 0 0 3px rgba(255,180,84,.16);}
@@ -183,10 +190,10 @@
     background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-bottom:none;}
   .podblk.gold{border-color:rgba(255,212,121,.6);box-shadow:0 0 22px rgba(255,212,121,.18);background:linear-gradient(180deg,rgba(255,212,121,.16),var(--panel));}
   #rCompare .lbrow .hint{width:76px;text-align:right;}
-  .trash{font-size:16px;font-weight:600;line-height:1.4;padding:12px 14px;border-radius:12px;
-    background:rgba(255,92,138,.10);border:1px solid rgba(255,92,138,.28);color:var(--ink);
+  .trash{font-size:16px;font-weight:600;line-height:1.4;padding:12px 14px;border-radius:10px;
+    background:rgba(245,165,36,.10);border:1px solid rgba(245,165,36,.28);color:var(--ink);
     animation:pop .4s cubic-bezier(.2,1.4,.4,1);}
-  .trash.good{background:rgba(255,194,75,.12);border-color:rgba(255,194,75,.34);}
+  .trash.good{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.34);}
   @keyframes pop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:none;}}
 </style>
 </head>
@@ -218,29 +225,45 @@
 <!-- ============ INTRO ============ -->
 <section id="intro" class="screen on">
   <div class="introwrap">
-    <svg class="orb" viewBox="0 0 200 200" aria-hidden="true">
+    <svg class="globe" viewBox="0 0 240 240" aria-hidden="true">
       <defs>
-        <radialGradient id="og" cx="38%" cy="34%" r="72%">
-          <stop offset="0%" stop-color="#FFC8E4"/>
-          <stop offset="46%" stop-color="#FF5C8A"/>
-          <stop offset="100%" stop-color="#5A1E52"/>
+        <radialGradient id="sweepGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(34,211,238,.35)"/>
+          <stop offset="70%" stop-color="rgba(34,211,238,.10)"/>
+          <stop offset="100%" stop-color="rgba(34,211,238,0)"/>
         </radialGradient>
-        <linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#FF6FB5" stop-opacity="0"/>
-          <stop offset="50%" stop-color="#B98CFF"/>
-          <stop offset="100%" stop-color="#FFCE6B" stop-opacity="0"/>
-        </linearGradient>
+        <clipPath id="globeClip"><circle cx="120" cy="120" r="92"/></clipPath>
       </defs>
-      <circle class="halo" cx="100" cy="100" r="64"/>
-      <circle class="planet" cx="100" cy="100" r="44" fill="url(#og)"/>
-      <g class="orbit">
-        <ellipse class="ringline" cx="100" cy="100" rx="88" ry="30" transform="rotate(-20 100 100)" stroke="url(#rg)"/>
-        <circle class="sat" cx="188" cy="100" r="4.2" transform="rotate(-20 100 100)"/>
+      <!-- outer HUD ticks -->
+      <circle cx="120" cy="120" r="104" fill="none" stroke="rgba(34,211,238,.18)" stroke-width="1" stroke-dasharray="2 8"/>
+      <circle class="gsphere" cx="120" cy="120" r="92"/>
+      <g clip-path="url(#globeClip)">
+        <!-- latitude lines -->
+        <ellipse class="gline" cx="120" cy="120" rx="92" ry="30"/>
+        <ellipse class="gline" cx="120" cy="120" rx="92" ry="62"/>
+        <line class="gline" x1="28" y1="120" x2="212" y2="120"/>
+        <!-- spinning longitudes + stylised landmasses -->
+        <g class="gspin">
+          <ellipse class="gline" cx="120" cy="120" rx="30" ry="92"/>
+          <ellipse class="gline" cx="120" cy="120" rx="62" ry="92"/>
+          <line class="gline" x1="120" y1="28" x2="120" y2="212"/>
+          <path class="gland" d="M70 78 q18 -12 34 -2 q10 8 2 22 q-14 10 -30 4 q-14 -8 -6 -24 z"/>
+          <path class="gland" d="M132 150 q22 -6 34 8 q6 14 -10 22 q-20 6 -30 -8 q-6 -14 6 -22 z"/>
+          <path class="gland" d="M150 70 q14 2 16 16 q-2 12 -16 12 q-12 -2 -12 -14 q0 -12 12 -14 z"/>
+        </g>
+        <!-- radar sweep -->
+        <g class="sweep">
+          <path d="M120 120 L120 28 A92 92 0 0 1 205 92 Z" fill="url(#sweepGrad)"/>
+          <line x1="120" y1="120" x2="120" y2="28" stroke="rgba(34,211,238,.8)" stroke-width="1.5"/>
+        </g>
       </g>
+      <!-- target pin -->
+      <g class="pin"><circle cx="156" cy="88" r="4.5"/><circle cx="156" cy="88" r="9" fill="none" stroke="var(--warm)" stroke-width="1.2" opacity=".6"/></g>
     </svg>
+    <div class="coords" id="coords">LAT 00.0000  LON 000.0000</div>
     <div class="loader">
       <div class="bar"><i id="loadbar"></i></div>
-      <div class="status" id="status">connecting</div>
+      <div class="status" id="status">establishing satellite link</div>
     </div>
     <h1 class="ititle" id="ititle">souvlaki_ha_hamod 2.0</h1>
     <div class="credit" id="credit"><b>dor_also_hamod</b></div>
@@ -436,7 +459,7 @@
     </div>
     <button class="btn teal" id="shareBtn">📸 Share my score</button>
     <button class="btn" id="rematchBtn" style="display:none;">🔁 Rematch — same crew, new drops</button>
-    <button class="btn" id="joinRematch" style="display:none;background:linear-gradient(135deg,#E879F9,#C74EE8);color:#fff;">🔁 Rematch started — tap to join!</button>
+    <button class="btn" id="joinRematch" style="display:none;background:linear-gradient(135deg,#F7BE55,#F5A524);color:#2a1a03;">🔁 Rematch started — tap to join!</button>
     <button class="btn" id="againBtn">New expedition</button>
     <button class="btn ghost" id="finalLobbyBack" style="display:none;">Back to challenge</button>
   </div>
@@ -826,10 +849,18 @@ $("cfgCopy").onclick=()=>{navigator.clipboard?.writeText($("cfgLink").value).the
 $("cfgGo").onclick=()=>show("menu");
 $("cfgBack").onclick=()=>show("menu");
 
-/* ---- INTRO (modern loader) ---- */
+/* ---- INTRO (satellite-recon loader) ---- */
 (function(){
-  const phases=[["connecting",22],["acquiring imagery",55],["plotting coordinates",84],["ready",100]];
+  const phases=[["establishing satellite link",20],["acquiring street imagery",48],["triangulating coordinates",76],["recon systems ready",100]];
   const bar=$("loadbar"), status=$("status"); let p=0, done=false;
+  // scramble the coordinate readout until locked
+  const coords=$("coords"); let coordTimer=null;
+  function tick(){
+    const lat=(Math.random()*180-90).toFixed(4).padStart(8," ");
+    const lon=(Math.random()*360-180).toFixed(4).padStart(9," ");
+    coords.textContent=`LAT ${lat}  LON ${lon}`;
+  }
+  coordTimer=setInterval(tick,80);
   function enter(){ if(done)return; done=true; show("menu"); }
   function step(){
     if(p<phases.length){
@@ -837,7 +868,9 @@ $("cfgBack").onclick=()=>show("menu");
       bar.style.width=phases[p][1]+"%";
       p++; setTimeout(step, 560);
     } else {
-      status.textContent="ready";
+      clearInterval(coordTimer);
+      coords.textContent="LAT ✦ LOCKED   LON ✦ LOCKED";
+      status.textContent="recon systems ready";
       $("ititle").classList.add("show");
       setTimeout(()=>$("credit").classList.add("show"), 240);
       setTimeout(()=>$("isub").classList.add("show"), 420);
@@ -1356,7 +1389,7 @@ function openGuessMap(forced){
     S.gMap.on("click",e=>{
       S.guess={lat:e.latlng.lat,lng:e.latlng.lng};
       if(S.gMarker){S.gMarker.setLatLng(e.latlng);}
-      else{S.gMarker=L.circleMarker(e.latlng,{radius:10,color:"#ffffff",weight:3,fillColor:"#36D6C3",fillOpacity:1}).addTo(S.gMap);}
+      else{S.gMarker=L.circleMarker(e.latlng,{radius:10,color:"#ffffff",weight:3,fillColor:"#22D3EE",fillOpacity:1}).addTo(S.gMap);}
       $("confirmGuess").disabled=false;
     });
   }
@@ -1469,11 +1502,11 @@ function drawGuessMap(includeOthers, others){
   const a=[S.answer.lat,S.answer.lng]; const bounds=[a];
   if(S.guess){
     const g=[S.guess.lat,S.guess.lng]; bounds.push(g);
-    L.circleMarker(g,{radius:7,color:"#36D6C3",fillColor:"#36D6C3",fillOpacity:1,weight:2}).addTo(S.rMap)
+    L.circleMarker(g,{radius:7,color:"#22D3EE",fillColor:"#22D3EE",fillOpacity:1,weight:2}).addTo(S.rMap)
       .bindTooltip("You",includeOthers?{permanent:true,direction:"top",className:"gtip"}:{});
-    L.polyline([g,a],{color:"#FFB454",weight:2,dashArray:"6 6",opacity:.85}).addTo(S.rMap);
+    L.polyline([g,a],{color:"#F5A524",weight:2,dashArray:"6 6",opacity:.85}).addTo(S.rMap);
   }
-  L.circleMarker(a,{radius:7,color:"#FFB454",fillColor:"#FFB454",fillOpacity:1,weight:2}).addTo(S.rMap).bindTooltip(S.answer.name);
+  L.circleMarker(a,{radius:7,color:"#F5A524",fillColor:"#F5A524",fillOpacity:1,weight:2}).addTo(S.rMap).bindTooltip(S.answer.name);
   if(includeOthers && others){
     others.forEach(p=>{
       if(p.slug===S.slug||p.left)return;
@@ -1606,28 +1639,31 @@ function renderPodium(rows){
 $("shareBtn").onclick=async ()=>{
   const W=1080,H=1080,c=document.createElement("canvas");c.width=W;c.height=H;
   const x=c.getContext("2d");
-  x.fillStyle="#0B1220";x.fillRect(0,0,W,H);
-  let g=x.createRadialGradient(W*0.15,H*0.1,60,W*0.15,H*0.1,700);
-  g.addColorStop(0,"rgba(31,127,134,.55)");g.addColorStop(1,"transparent");x.fillStyle=g;x.fillRect(0,0,W,H);
-  g=x.createRadialGradient(W*0.9,H*0.95,60,W*0.9,H*0.95,700);
-  g.addColorStop(0,"rgba(74,58,130,.55)");g.addColorStop(1,"transparent");x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.fillStyle="#070B12";x.fillRect(0,0,W,H);
+  // faint HUD grid
+  x.strokeStyle="rgba(34,211,238,.07)";x.lineWidth=1;
+  for(let i=0;i<=W;i+=54){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke();x.beginPath();x.moveTo(0,i);x.lineTo(W,i);x.stroke();}
+  let g=x.createRadialGradient(W*0.15,H*0.1,60,W*0.15,H*0.1,720);
+  g.addColorStop(0,"rgba(14,116,144,.5)");g.addColorStop(1,"transparent");x.fillStyle=g;x.fillRect(0,0,W,H);
+  g=x.createRadialGradient(W*0.9,H*0.95,60,W*0.9,H*0.95,720);
+  g.addColorStop(0,"rgba(122,74,15,.45)");g.addColorStop(1,"transparent");x.fillStyle=g;x.fillRect(0,0,W,H);
   x.textAlign="center";
-  x.fillStyle="#5EEAD4";x.font="600 34px monospace";x.letterSpacing="12px";
-  x.fillText("STREET VIEW CHALLENGE",W/2,150);
+  x.fillStyle="#22D3EE";x.font="600 34px monospace";x.letterSpacing="12px";
+  x.fillText("◎ STREET-VIEW RECON",W/2,150);
   x.letterSpacing="0px";
-  x.fillStyle="#E8EDF4";x.font="700 64px monospace";
+  x.fillStyle="#E6F0F7";x.font="700 62px monospace";
   x.fillText("souvlaki_ha_hamod 2.0",W/2,240);
-  x.fillStyle="#FFB454";x.font="700 210px monospace";
+  x.fillStyle="#F5A524";x.font="700 210px monospace";
   x.fillText(S.total.toLocaleString(),W/2,540);
-  x.fillStyle="#7C8AA5";x.font="500 44px monospace";
+  x.fillStyle="#6B7D93";x.font="500 44px monospace";
   x.fillText("/ "+(S.rounds*ROUND_MAX).toLocaleString()+" pts",W/2,615);
-  x.fillStyle="#E8EDF4";x.font="500 40px sans-serif";
+  x.fillStyle="#E6F0F7";x.font="500 40px sans-serif";
   const meta=`${S.rounds} rounds · ${REGION_LABEL[S.region]||"Whole world"} · ${DIFF_LABEL[S.diff]||"Normal"}`;
   x.fillText(meta,W/2,720);
-  if(S.mode==="friends"){x.fillStyle="#9FC7FF";x.font="600 42px monospace";x.fillText("challenge  "+S.code,W/2,790);}
-  x.fillStyle="#5EEAD4";x.font="600 44px monospace";
+  if(S.mode!=="solo"){x.fillStyle="#38BDF8";x.font="600 42px monospace";x.fillText((S.mode==="live"?"live  ":"challenge  ")+S.code,W/2,790);}
+  x.fillStyle="#22D3EE";x.font="600 44px monospace";
   x.fillText("▶  yanivvshlomo.github.io",W/2,940);
-  const text=`I scored ${S.total.toLocaleString()} pts in souvlaki_ha_hamod! 🌍 Play: https://yanivvshlomo.github.io/${S.mode==="friends"?" (challenge "+S.code+")":""}`;
+  const text=`I scored ${S.total.toLocaleString()} pts in souvlaki_ha_hamod 2.0! 🌍 Play: https://yanivvshlomo.github.io/${S.mode!=="solo"?" (code "+S.code+")":""}`;
   try{
     const blob=await new Promise(r=>c.toBlob(r,"image/png"));
     const file=new File([blob],"souvlaki-score.png",{type:"image/png"});
