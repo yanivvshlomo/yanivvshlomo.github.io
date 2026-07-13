@@ -11,7 +11,7 @@
 
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="theme-color" content="#0B1220" />
-<title>souvlaki_ha_hamod</title>
+<title>souvlaki_ha_hamod 2.0</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -21,9 +21,9 @@
 
 <style>
   :root{
-    --abyss:#0B1220;--panel:#131C2B;--panel2:#1B2638;--ink:#E8EDF4;--muted:#7C8AA5;
-    --signal:#FFB454;--target:#36D6C3;--danger:#FF6B6B;--line:rgba(124,138,165,.22);
-    --shadow:0 18px 50px rgba(0,0,0,.55);
+    --abyss:#0E0A1F;--panel:#1A1236;--panel2:#251746;--ink:#F3ECFF;--muted:#A597C9;
+    --signal:#FF5C8A;--target:#FFC24B;--danger:#FF5C5C;--line:rgba(165,151,201,.24);
+    --shadow:0 18px 50px rgba(0,0,0,.6);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;background:var(--abyss);color:var(--ink);
@@ -39,11 +39,11 @@
   .brand .tag{font-size:11px;color:var(--muted);letter-spacing:.32em;text-transform:uppercase;}
 
   /* ---- modern accents ---- */
-  :root{--neon:#5EEAD4;--sky:#9FC7FF;--warm:#FFC98A;}
+  :root{--neon:#FF6FB5;--sky:#B98CFF;--warm:#FFCE6B;}
   .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
-  .aurora::before,.aurora::after{content:"";position:absolute;border-radius:50%;filter:blur(80px);opacity:.42;}
-  .aurora::before{width:62vw;height:62vw;background:radial-gradient(circle,#1f7f86,transparent 62%);top:-12%;left:-16%;animation:drift1 20s ease-in-out infinite alternate;}
-  .aurora::after{width:58vw;height:58vw;background:radial-gradient(circle,#4a3a82,transparent 62%);bottom:-16%;right:-12%;animation:drift2 24s ease-in-out infinite alternate;}
+  .aurora::before,.aurora::after{content:"";position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;}
+  .aurora::before{width:62vw;height:62vw;background:radial-gradient(circle,#b5257e,transparent 62%);top:-12%;left:-16%;animation:drift1 20s ease-in-out infinite alternate;}
+  .aurora::after{width:58vw;height:58vw;background:radial-gradient(circle,#5a2fae,transparent 62%);bottom:-16%;right:-12%;animation:drift2 24s ease-in-out infinite alternate;}
   @keyframes drift1{to{transform:translate(18%,12%) scale(1.1);}}
   @keyframes drift2{to{transform:translate(-14%,-10%) scale(1.08);}}
   .wrap{position:relative;z-index:2;}
@@ -60,8 +60,8 @@
   #intro{align-items:center;justify-content:center;background:transparent;}
   .introwrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px;text-align:center;}
   .orb{width:214px;height:214px;}
-  .orb .halo{fill:rgba(54,214,195,.18);filter:blur(16px);animation:halo 3.6s ease-in-out infinite;transform-origin:100px 100px;}
-  .orb .planet{filter:drop-shadow(0 0 26px rgba(54,214,195,.55));}
+  .orb .halo{fill:rgba(255,111,181,.18);filter:blur(16px);animation:halo 3.6s ease-in-out infinite;transform-origin:100px 100px;}
+  .orb .planet{filter:drop-shadow(0 0 26px rgba(255,92,138,.6));}
   .orb .ringline{fill:none;stroke-width:1.6;opacity:.9;}
   .orb .sat{fill:var(--warm);filter:drop-shadow(0 0 7px var(--warm));}
   .orb .orbit{transform-origin:100px 100px;animation:orbit 9s linear infinite;}
@@ -69,11 +69,11 @@
   @keyframes halo{0%,100%{opacity:.5;transform:scale(1);}50%{opacity:1;transform:scale(1.06);}}
   .loader{width:min(248px,68vw);display:flex;flex-direction:column;gap:9px;align-items:center;}
   .loader .bar{width:100%;height:3px;border-radius:4px;background:rgba(255,255,255,.09);overflow:hidden;}
-  .loader .bar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--neon),var(--sky));box-shadow:0 0 12px rgba(94,234,212,.6);transition:width .55s ease;}
+  .loader .bar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--neon),var(--sky));box-shadow:0 0 12px rgba(255,111,181,.6);transition:width .55s ease;}
   .loader .status{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
   .ititle{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(30px,9.4vw,50px);letter-spacing:-.02em;word-break:break-word;
-    background:linear-gradient(95deg,#9BF7E6,#9FC7FF 48%,#FFC98A);-webkit-background-clip:text;background-clip:text;color:transparent;
-    filter:drop-shadow(0 2px 18px rgba(125,233,217,.28));opacity:0;transform:translateY(12px) scale(.98);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);margin:4px 0 0;}
+    background:linear-gradient(95deg,#FF8FC0,#B98CFF 48%,#FFCE6B);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 2px 18px rgba(255,111,181,.34));opacity:0;transform:translateY(12px) scale(.98);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);margin:4px 0 0;}
   .ititle.show{opacity:1;transform:none;}
   .credit{font-family:"Space Grotesk",sans-serif;font-size:14px;letter-spacing:.02em;color:var(--muted);opacity:0;transform:translateY(8px);transition:opacity .6s .12s,transform .6s .12s;}
   .credit.show{opacity:1;transform:none;}
@@ -81,21 +81,21 @@
   .isub{font-family:"Space Grotesk",sans-serif;font-size:10.5px;letter-spacing:.36em;text-transform:uppercase;color:rgba(124,138,165,.7);opacity:0;transition:opacity .6s .25s;}
   .isub.show{opacity:1;}
   .startbtn{margin-top:12px;padding:14px 34px;border:none;border-radius:999px;cursor:pointer;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:15px;letter-spacing:.03em;
-    color:#04201c;background:linear-gradient(95deg,var(--neon),var(--sky));box-shadow:0 12px 32px rgba(94,234,212,.38);
+    color:#fff;background:linear-gradient(95deg,var(--neon),var(--sky));box-shadow:0 12px 32px rgba(255,111,181,.42);
     opacity:0;transform:translateY(10px) scale(.96);transition:opacity .55s,transform .55s;}
   .startbtn.show{opacity:1;transform:none;}
   .startbtn:active{transform:translateY(1px) scale(.99);}
   label.fld{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;}
   .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
-    background:var(--signal);color:#231603;font-weight:700;border-radius:13px;padding:15px;font-size:16px;transition:transform .08s;}
+    background:var(--signal);color:#fff;font-weight:700;border-radius:13px;padding:15px;font-size:16px;transition:transform .08s;}
   .btn:active{transform:translateY(1px);}
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
-  .btn.teal{background:var(--target);color:#04201c;}
+  .btn.teal{background:var(--target);color:#2a1a03;}
   .btn:disabled{filter:saturate(.3) brightness(.7);}
   .hint{font-size:12.5px;color:var(--muted);line-height:1.55;}
   .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:11px;overflow:hidden;}
   .seg button{flex:1;background:transparent;color:var(--muted);padding:11px 0;font-weight:600;font-size:14px;}
-  .seg button.on{background:var(--signal);color:#231603;}
+  .seg button.on{background:var(--signal);color:#fff;}
   input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:11px;
     padding:13px 14px;font-size:15px;font-family:"JetBrains Mono",monospace;text-transform:uppercase;}
   input:focus{outline:none;border-color:var(--signal);}
@@ -105,8 +105,9 @@
     background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;}
   select:focus{outline:none;border-color:var(--signal);}
 
-  #explore{position:absolute;inset:0;background:#0e1726;}
-  #svMapBlock{position:absolute;bottom:0;right:0;width:160px;height:160px;background:#0e1726;z-index:500;pointer-events:all;}
+  #explore{position:absolute;inset:0;background:#0e1726;overflow:hidden;}
+  /* the SV iframe is oversized & clipped so Google's corner chrome (address label, links, buttons) sits outside the visible area */
+  #svEmbed{position:absolute;top:-58px;left:-58px;width:calc(100% + 116px);height:calc(100% + 132px);border:none;}
   .hud{position:absolute;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:14px;z-index:600;pointer-events:none;}
   .hud.top{top:0;padding-top:max(14px,env(safe-area-inset-top));}
   .chip{background:rgba(11,18,32,.8);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:9px 13px;pointer-events:auto;}
@@ -160,8 +161,8 @@
   /* ---- 2.0 polish ---- */
   .screen.on>.wrap{animation:rise .38s cubic-bezier(.2,.7,.2,1);}
   @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
-  .btn{background:linear-gradient(135deg,#FFC069,#FF9E3D);transition:transform .08s,box-shadow .2s,filter .2s;}
-  .btn.teal{background:linear-gradient(135deg,#5EEAD4,#2BB8A8);}
+  .btn{background:linear-gradient(135deg,#FF7AA8,#FF3D7F);transition:transform .08s,box-shadow .2s,filter .2s;}
+  .btn.teal{background:linear-gradient(135deg,#FFD57A,#FFB024);}
   .btn.ghost{background:transparent;}
   .btn:active{transform:translateY(2px) scale(.995);}
   input:focus{box-shadow:0 0 0 3px rgba(255,180,84,.16);}
@@ -182,6 +183,11 @@
     background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-bottom:none;}
   .podblk.gold{border-color:rgba(255,212,121,.6);box-shadow:0 0 22px rgba(255,212,121,.18);background:linear-gradient(180deg,rgba(255,212,121,.16),var(--panel));}
   #rCompare .lbrow .hint{width:76px;text-align:right;}
+  .trash{font-size:16px;font-weight:600;line-height:1.4;padding:12px 14px;border-radius:12px;
+    background:rgba(255,92,138,.10);border:1px solid rgba(255,92,138,.28);color:var(--ink);
+    animation:pop .4s cubic-bezier(.2,1.4,.4,1);}
+  .trash.good{background:rgba(255,194,75,.12);border-color:rgba(255,194,75,.34);}
+  @keyframes pop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:none;}}
 </style>
 </head>
 <body>
@@ -190,7 +196,7 @@
 <!-- ============ HOST SETUP (one time, for live multiplayer) ============ -->
 <section id="setup" class="screen">
   <div class="wrap" style="display:flex;flex-direction:column;gap:16px;">
-    <div class="brand"><b>souvlaki_ha_hamod</b><span class="tag">host setup · one time</span></div>
+    <div class="brand"><b>souvlaki_ha_hamod 2.0</b><span class="tag">host setup · one time</span></div>
     <div class="card" style="display:flex;flex-direction:column;gap:13px;">
       <div class="eyebrow">Connect your free database</div>
       <p class="hint">Live "everyone on one leaderboard" mode needs a free Firebase database. Paste the <span class="mono">firebaseConfig</span> from the Firebase console — the whole block is fine. You only do this once; solo play needs none of this.</p>
@@ -215,14 +221,14 @@
     <svg class="orb" viewBox="0 0 200 200" aria-hidden="true">
       <defs>
         <radialGradient id="og" cx="38%" cy="34%" r="72%">
-          <stop offset="0%" stop-color="#B9FBEF"/>
-          <stop offset="46%" stop-color="#36D6C3"/>
-          <stop offset="100%" stop-color="#0C4E5A"/>
+          <stop offset="0%" stop-color="#FFC8E4"/>
+          <stop offset="46%" stop-color="#FF5C8A"/>
+          <stop offset="100%" stop-color="#5A1E52"/>
         </radialGradient>
         <linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#5EEAD4" stop-opacity="0"/>
-          <stop offset="50%" stop-color="#9FC7FF"/>
-          <stop offset="100%" stop-color="#FFC98A" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#FF6FB5" stop-opacity="0"/>
+          <stop offset="50%" stop-color="#B98CFF"/>
+          <stop offset="100%" stop-color="#FFCE6B" stop-opacity="0"/>
         </linearGradient>
       </defs>
       <circle class="halo" cx="100" cy="100" r="64"/>
@@ -236,7 +242,7 @@
       <div class="bar"><i id="loadbar"></i></div>
       <div class="status" id="status">connecting</div>
     </div>
-    <h1 class="ititle" id="ititle">souvlaki_ha_hamod</h1>
+    <h1 class="ititle" id="ititle">souvlaki_ha_hamod 2.0</h1>
     <div class="credit" id="credit"><b>dor_also_hamod</b></div>
     <div class="isub" id="isub">drop · investigate · pinpoint</div>
     <button class="startbtn" id="enterPrompt">▶&nbsp; Start play</button>
@@ -246,7 +252,7 @@
 <!-- ============ MENU ============ -->
 <section id="menu" class="screen">
   <div class="wrap" style="display:flex;flex-direction:column;gap:18px;padding-bottom:72px;">
-    <div class="brand"><b>souvlaki_ha_hamod</b><span class="tag">street view</span></div>
+    <div class="brand"><b>souvlaki_ha_hamod 2.0</b><span class="tag">street view</span></div>
     <div class="card" style="display:flex;flex-direction:column;gap:16px;">
       <p class="hint">You're dropped into a <b style="color:var(--ink)">real street-level photo</b>. Look around, zoom, and move between connected images to read the signs, roads and surroundings — then pin where you think you are. No account needed.</p>
 
@@ -287,23 +293,24 @@
         <label class="fld">Who's playing</label>
         <div class="seg" id="modeSeg">
           <button class="on" data-m="solo">Solo</button>
-          <button data-m="friends">With friends</button>
+          <button data-m="live">Live</button>
+          <button data-m="challenge">Challenge</button>
         </div>
       </div>
       <div id="friendsBox" style="display:none;flex-direction:column;gap:12px;">
         <div>
-          <label class="fld">Your name (shows on the leaderboard)</label>
+          <label class="fld">Your name (shows to everyone)</label>
           <input id="nameInput" placeholder="e.g. Yaniv" maxlength="16" autocomplete="off" style="text-transform:none;"/>
         </div>
         <div class="seg" id="cjSeg">
-          <button class="on" data-cj="create">Create challenge</button>
+          <button class="on" data-cj="create">Create game</button>
           <button data-cj="join">Join with code</button>
         </div>
         <div id="joinField" style="display:none;">
-          <label class="fld">Friend's challenge code</label>
+          <label class="fld">Friend's game code</label>
           <input id="codeInput" placeholder="e.g. K7QM2P" maxlength="8" autocomplete="off"/>
         </div>
-        <p class="hint">Everyone plays the same drops and lands on one <b style="color:var(--ink)">live leaderboard</b> — play anytime, best score wins. The challenge creator picks the region; joiners get it automatically.</p>
+        <p class="hint" id="modeDesc"></p>
         <div id="dbBanner" style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--ink);">
           ⚠️ No database connected yet.<br>
           <button onclick="show('setup')" style="margin-top:8px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;width:100%;">Connect database →</button>
@@ -322,7 +329,7 @@
 <!-- ============ LOBBY / LIVE LEADERBOARD ============ -->
 <section id="lobby" class="screen">
   <div class="wrap" style="display:flex;flex-direction:column;gap:16px;">
-    <div class="brand"><b>souvlaki_ha_hamod</b><span class="tag" id="lobbyMeta">challenge</span></div>
+    <div class="brand"><b>souvlaki_ha_hamod 2.0</b><span class="tag" id="lobbyMeta">challenge</span></div>
     <div class="share">
       <div class="hint" style="margin-bottom:6px;">Share this code (and your game link) with friends:</div>
       <div class="code mono" id="lobbyCode">——————</div>
@@ -337,10 +344,34 @@
   </div>
 </section>
 
+<!-- ============ LIVE LOBBY (synchronized) ============ -->
+<section id="liveLobby" class="screen">
+  <div class="wrap" style="display:flex;flex-direction:column;gap:16px;">
+    <div class="brand"><b>souvlaki_ha_hamod 2.0</b><span class="tag" id="liveMeta">live</span></div>
+    <div class="share">
+      <div class="hint" style="margin-bottom:6px;">Share this code so friends can join <b style="color:var(--ink)">before</b> you start:</div>
+      <div class="code mono" id="liveCode">——————</div>
+      <button class="btn ghost" id="copyLiveCode" style="margin-top:10px;width:auto;padding:11px 18px;">Copy code</button>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:10px;">Players in the room</div>
+      <div class="lb" id="livePlayers"><div class="lbempty">Just you so far…</div></div>
+    </div>
+    <div id="liveHostBox" style="display:none;">
+      <button class="btn" id="liveStartBtn">▶︎ Start game for everyone</button>
+      <p class="hint" style="text-align:center;margin-top:8px;">Everyone plays the same places, in sync. Once you start, no one new can join.</p>
+    </div>
+    <div id="liveGuestBox" style="display:none;text-align:center;">
+      <div class="spin"></div>
+      <p class="hint">Waiting for the host to start the game…</p>
+    </div>
+    <button class="btn ghost" id="liveBack">Leave game</button>
+  </div>
+</section>
+
 <!-- GAME -->
 <section id="game" class="screen">
   <div id="explore"></div>
-  <div id="svMapBlock"></div>
   <div id="satWarn"><b id="satWarnMsg">Finding a street location…</b></div>
   <div class="hintpill">Look around &amp; move · no “you are here”</div>
   <div class="hud top">
@@ -366,14 +397,21 @@
   <div class="wrap">
     <div class="eyebrow">Round <span id="rResRound" class="mono">1</span></div>
     <div class="tier" id="rTier">GREAT</div>
-    <div class="bignum mono"><span id="rScore">0</span> <span>/ 5000 pts</span></div>
+    <div class="bignum mono"><span id="rScore">0</span> <span>/ 5500 pts</span></div>
     <div class="scorebar"><i id="rBar" style="width:0%"></i></div>
+    <div class="trash" id="rTrash"></div>
     <div class="place">It was <b id="rPlace">—</b> <span id="rFlag" style="font-size:19px;"></span></div>
     <div id="rmap"></div>
     <div id="rCompare" style="display:none;"></div>
     <div class="statline"><span class="k">Distance off</span><span class="mono" id="rDist">—</span></div>
+    <div class="statline" id="rSpeedLine" style="display:none;"><span class="k">⚡ Speed bonus</span><span class="mono" style="color:var(--target);" id="rSpeedVal">—</span></div>
     <div class="statline" id="rHintLine" style="display:none;"><span class="k">Hint penalty</span><span class="mono" style="color:var(--danger);" id="rHintVal">—</span></div>
     <div class="statline"><span class="k">Running total</span><span class="mono" id="rTotal">0</span></div>
+    <div id="rWait" style="display:none;text-align:center;padding:6px 0;">
+      <div class="spin"></div>
+      <div class="hint" id="rWaitMsg">Waiting for the others to guess…</div>
+      <button class="btn ghost" id="rSkipBtn" style="display:none;margin-top:10px;">Skip players who left →</button>
+    </div>
     <button class="btn" id="nextBtn">Next round →</button>
   </div>
 </section>
@@ -410,7 +448,7 @@
 <script type="module">
 /* souvlaki_ha_hamod — solo + live multiplayer. Imagery: Google Street View. */
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, initializeFirestore, doc, getDoc, setDoc, getDocs, collection, query, orderBy, onSnapshot, serverTimestamp }
+import { getFirestore, initializeFirestore, doc, getDoc, setDoc, updateDoc, getDocs, collection, query, orderBy, onSnapshot, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* Firebase config is supplied via the in-app host setup screen (saved into the share link). */
@@ -754,7 +792,7 @@ const PLACES=[
 
 const S={mode:"solo",cj:"create",region:"world",diff:"normal",rounds:5,roundTime:180,code:"",round:0,total:0,results:[],answer:null,guess:null,
   timer:null,timeLeft:0,exMap:null,gMap:null,rMap:null,gMarker:null,order:[],orderPtr:0,name:"",slug:"",unsub:null,unsubRoom:null,
-  hintLevel:0,hintCost:0};
+  hintLevel:0,hintCost:0,isHost:false,roster:[],livePlaces:null,unsubPlayers:null,liveWaiting:false,liveRevealed:false,skipTimer:null,submitted:false};
 
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));$(id).classList.add("on");}
@@ -816,6 +854,9 @@ function makeCode(){const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let 
 function haversine(a,b){const R=6371,r=d=>d*Math.PI/180;const dLat=r(b.lat-a.lat),dLng=r(b.lng-a.lng);
   const x=Math.sin(dLat/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function scoreFor(km){return Math.round(5000*Math.exp(-km/2000));}
+const ROUND_MAX=5500; // 5000 distance + up to 500 speed bonus
+// speed bonus: full 500 for an instant guess, fading to 0 by 60s
+function speedBonusFor(secs){return Math.max(0,Math.round(500*(1-Math.min(secs,60)/60)));}
 function tierFor(km){if(km<1)return"BULLSEYE";if(km<25)return"EXCELLENT";if(km<150)return"GREAT";
   if(km<1000)return"SOLID";if(km<3000)return"IN THE REGION";if(km<7000)return"WRONG CONTINENT?";return"WAY OFF";}
 function fmtDist(km){return km<1?`${Math.round(km*1000)} m`:km<100?`${km.toFixed(1)} km`:`${Math.round(km).toLocaleString()} km`;}
@@ -845,11 +886,23 @@ $("roundsSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{
   $("roundsSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.rounds=+b.dataset.r;});
 $("timeSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{
   $("timeSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.roundTime=+b.dataset.t;});
-function syncDbBanner(){$("dbBanner").style.display=(S.mode==="friends"&&!db)?"block":"none";}
+function syncDbBanner(){$("dbBanner").style.display=(S.mode!=="solo"&&!db)?"block":"none";}
+const MODE_DESC={
+  live:"<b style='color:var(--ink)'>Live:</b> everyone plays together, round by round. After each round the game waits for all players, then reveals everyone's guesses on the map. Gather friends with the code first — you start when everyone's in.",
+  challenge:"<b style='color:var(--ink)'>Challenge:</b> play on your own time. You (and anyone with the code) get the exact same places; when you're done your score joins a shared board and podium — best score wins."
+};
+function syncModeUI(){
+  $("friendsBox").style.display=S.mode==="solo"?"none":"flex";
+  if(S.mode!=="solo") $("modeDesc").innerHTML=MODE_DESC[S.mode]||"";
+  $("cjSeg").querySelectorAll("button").forEach(x=>{
+    if(x.dataset.cj==="create") x.textContent=S.mode==="live"?"Create game":"Create challenge";
+    else x.textContent="Join with code";
+  });
+  syncDbBanner();
+}
 $("modeSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{
   $("modeSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.mode=b.dataset.m;
-  $("friendsBox").style.display=S.mode==="friends"?"flex":"none";
-  syncDbBanner();});
+  syncModeUI();});
 $("cjSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{
   $("cjSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.cj=b.dataset.cj;
   $("joinField").style.display=S.cj==="join"?"block":"none";});
@@ -900,19 +953,40 @@ $("startBtn").onclick=async ()=>{
     let snap;
     try{ snap=await withTimeout(getDoc(doc(db,"rooms",code)),8000,"read"); }
     catch(e){ netFail(e); return; }
-    if(!snap.exists()){ toast("No challenge with that code."); return; }
+    if(!snap.exists()){ toast("No game with that code."); return; }
     const d=snap.data();
+    const roomMode=d.mode==="live"?"live":"challenge";
+    if(roomMode!==S.mode){ toast(`That code is a ${roomMode==="live"?"Live":"Challenge"} game — switch to ${roomMode==="live"?"Live":"Challenge"} mode to join.`); return; }
     S.code=code;S.rounds=d.rounds||5;S.roundTime=(d.roundTime!=null?d.roundTime:180);S.region=d.region||"world";S.diff=d.diff||"normal";
     S.order=buildOrder(S.code,S.region,S.diff);
-    enterLobby();
+    if(S.mode==="live"){
+      if(d.phase!=="lobby"){ toast("That game already started — ask the host for a new code."); return; }
+      S.isHost=false;
+      try{ await withTimeout(setDoc(doc(db,"rooms",code,"players",S.slug),{name:S.name,guesses:{},total:0}),8000,"write"); }
+      catch(e){ netFail(e); return; }
+      enterLiveLobby(d);
+    } else {
+      enterLobby();
+    }
   } else {
     const code=makeCode();
     S.region=$("regionSel").value;
-    try{
-      await withTimeout(setDoc(doc(db,"rooms",code),{rounds:S.rounds,roundTime:S.roundTime,region:S.region,diff:S.diff,host:S.name,createdAt:serverTimestamp()}),8000,"write");
-    }catch(e){ netFail(e); return; }
-    S.code=code;S.order=buildOrder(S.code,S.region,S.diff);
-    enterLobby();
+    if(S.mode==="live"){
+      if(S.roundTime<=0) S.roundTime=120; // live needs a timer so barriers always resolve
+      const room={mode:"live",phase:"lobby",round:0,rounds:S.rounds,roundTime:S.roundTime,region:S.region,diff:S.diff,host:S.slug,hostName:S.name,createdAt:serverTimestamp()};
+      try{
+        await withTimeout(setDoc(doc(db,"rooms",code),room),8000,"write");
+        await withTimeout(setDoc(doc(db,"rooms",code,"players",S.slug),{name:S.name,guesses:{},total:0}),8000,"write");
+      }catch(e){ netFail(e); return; }
+      S.code=code;S.isHost=true;S.order=buildOrder(code,S.region,S.diff);
+      enterLiveLobby(room);
+    } else {
+      try{
+        await withTimeout(setDoc(doc(db,"rooms",code),{mode:"challenge",rounds:S.rounds,roundTime:S.roundTime,region:S.region,diff:S.diff,host:S.name,createdAt:serverTimestamp()}),8000,"write");
+      }catch(e){ netFail(e); return; }
+      S.code=code;S.order=buildOrder(S.code,S.region,S.diff);
+      enterLobby();
+    }
   }
   }finally{
     startBtn.disabled=false;
@@ -953,23 +1027,235 @@ function renderBoard(el,rows){
   }).join("");
 }
 
+/* ============================================================
+   LIVE (synchronized) MODE
+   Everyone plays the same places, round by round. After you guess
+   you wait until every active player has guessed that round, then
+   everyone's guesses are revealed. Rounds are self-paced after that.
+   ============================================================ */
+function cleanupLiveSubs(){
+  if(S.unsubRoom){S.unsubRoom();S.unsubRoom=null;}
+  if(S.unsubPlayers){S.unsubPlayers();S.unsubPlayers=null;}
+  clearTimeout(S.skipTimer);
+}
+function enterLiveLobby(d){
+  S.liveStarted=false; S.playersCache=null; S.hostSlug=d.host||S.slug;
+  $("liveCode").textContent=S.code;
+  $("liveMeta").textContent=`${S.rounds} rounds · ${Math.round(S.roundTime/60*10)/10}m/round · ${REGION_LABEL[S.region]||"Whole world"} · ${DIFF_LABEL[S.diff]||"Normal"}`;
+  $("liveHostBox").style.display=S.isHost?"block":"none";
+  $("liveGuestBox").style.display=S.isHost?"none":"block";
+  $("liveStartBtn").disabled=false; $("liveStartBtn").textContent="▶︎ Start game for everyone";
+  show("liveLobby");
+  listenLive();
+}
+function listenLive(){
+  cleanupLiveSubs();
+  S.unsubRoom=onSnapshot(doc(db,"rooms",S.code),snap=>{
+    const d=snap.data(); if(!d) return;
+    if(d.roster) S.roster=d.roster;
+    if(d.phase==="play" && !S.liveStarted){ beginLive(d); }
+  },e=>console.warn("room listen",e));
+  S.unsubPlayers=onSnapshot(collection(db,"rooms",S.code,"players"),snap=>{
+    const players=[]; snap.forEach(p=>players.push({slug:p.id,...p.data()}));
+    S.playersCache=players;
+    if($("liveLobby").classList.contains("on")) renderLivePlayers(players);
+    if(S.liveWaiting && !S.liveRevealed) checkBarrier(players);
+    if($("final").classList.contains("on") && S.mode==="live") renderPodium(livePodiumRows(players));
+  },e=>console.warn("players listen",e));
+}
+function renderLivePlayers(players){
+  const el=$("livePlayers");
+  if(!players.length){ el.innerHTML='<div class="lbempty">Just you so far…</div>'; return; }
+  el.innerHTML=players.map(p=>{
+    const me=p.slug===S.slug?" me":"";
+    const host=p.slug===S.hostSlug?" 👑":"";
+    return `<div class="lbrow${me}"><span class="rank">🙂</span><span class="nm">${esc(p.name)}${host}</span><span class="pts mono">ready</span></div>`;
+  }).join("");
+  if(S.isHost) $("liveStartBtn").textContent=`▶︎ Start game (${players.length} player${players.length>1?"s":""})`;
+}
+function livePodiumRows(players){
+  return players.filter(p=>!p.left).map(p=>({name:p.name,total:p.total||0})).sort((a,b)=>b.total-a.total);
+}
+
+// Build the fixed sequence of playable places (with pano ids) so ALL players
+// see identical panoramas. Throws if metadata is unreachable (caller falls back).
+async function buildValidatedPlaces(order,count){
+  const out=[];
+  for(let i=0;i<order.length && out.length<count;i++){
+    const idx=order[i];
+    const pano=await panoIdFor(PLACES[idx]);
+    if(pano) out.push({idx,pano});
+  }
+  return out;
+}
+$("liveStartBtn").onclick=async ()=>{
+  const btn=$("liveStartBtn"); btn.disabled=true; btn.textContent="Preparing places…";
+  const roster=(S.playersCache||[{slug:S.slug,name:S.name}]).map(p=>({slug:p.slug,name:p.name}));
+  let places=null;
+  try{ places=await buildValidatedPlaces(S.order,S.rounds); }catch(e){ places=null; }
+  if(!places||!places.length){ places=S.order.slice(0,S.rounds).map(idx=>({idx,pano:null})); }
+  try{
+    await withTimeout(updateDoc(doc(db,"rooms",S.code),{phase:"play",roster,places}),9000,"write");
+  }catch(e){ toast("Couldn't start: "+((e&&e.message)||e)); btn.disabled=false; btn.textContent="▶︎ Start game for everyone"; return; }
+  // our own room listener will see phase=play and call beginLive()
+};
+function beginLive(d){
+  if(S.liveStarted) return;
+  S.liveStarted=true;
+  S.roster=d.roster||S.roster||[];
+  S.livePlaces=(d.places&&d.places.length)?d.places:S.order.slice(0,S.rounds).map(idx=>({idx,pano:null}));
+  S.rounds=S.livePlaces.length;
+  S.round=0; S.total=0; S.results=[];
+  startLiveRound(0);
+}
+function startLiveRound(N){
+  S.round=N; S.guess=null; S.submitted=false; S.liveWaiting=false; S.liveRevealed=false;
+  S.hintLevel=0; S.hintCost=0;
+  const hb=$("hintBtn"); hb.textContent="💡 Hint (−500)"; hb.disabled=false; hb.style.display="block";
+  if(S.gMarker&&S.gMap){S.gMap.removeLayer(S.gMarker);S.gMarker=null;}
+  if(S.gMap)S.gMap.setView([20,0],2);
+  $("confirmGuess").disabled=true;
+  $("guessLayer").classList.remove("on");
+  $("openGuess").style.display="flex";
+  $("roundNum").textContent=`${N+1}/${S.rounds}`;
+  clearInterval(S.timer); $("timerVal").textContent="--:--";
+  const place=S.livePlaces[N], p=PLACES[place.idx];
+  S.answer={name:p[0],lat:p[1],lng:p[2],cont:p[4],cc:p[5]||""};
+  $("satWarnMsg").textContent="Loading the next place…"; $("satWarn").style.display="block";
+  show("game");
+  const go=()=>{ $("satWarn").style.display="none"; startTimer(); };
+  (place.pano?showPano(place.pano,place.idx):showByLocation(p,place.idx)).then(go);
+}
+async function submitLiveGuess(g){
+  S.total=(S.total||0)+g.pts;
+  S.results.push({round:S.round+1,km:g.km,pts:g.pts,name:S.answer.name,cc:S.answer.cc});
+  try{
+    await updateDoc(doc(db,"rooms",S.code,"players",S.slug),{
+      ["guesses."+S.round]:{km:g.km,pts:g.pts,lat:(g.lat==null?null:g.lat),lng:(g.lng==null?null:g.lng),name:S.name},
+      total:S.total
+    });
+  }catch(e){ console.warn("live submit failed",e); toast("Couldn't send your guess — check connection."); }
+  enterLiveWaiting(g);
+}
+function enterLiveWaiting(g){
+  S.liveWaiting=true; S.liveRevealed=false;
+  paintScoreCard(g.km,g.pts,tierFor(g.km));
+  drawGuessMap(false,null);                 // show your guess vs the answer immediately
+  $("rCompare").style.display="none";
+  $("nextBtn").style.display="none";
+  $("rWait").style.display="block";
+  $("rSkipBtn").style.display="none";
+  show("result");
+  clearTimeout(S.skipTimer);
+  if(S.isHost){ S.skipTimer=setTimeout(()=>{ if(S.liveWaiting&&!S.liveRevealed) $("rSkipBtn").style.display="inline-flex"; },30000); }
+  if(S.playersCache) checkBarrier(S.playersCache);
+}
+function checkBarrier(players){
+  const active=players.filter(p=>!p.left);
+  const roster=(S.roster&&S.roster.length)?S.roster.filter(r=>{const pl=players.find(p=>p.slug===r.slug);return !(pl&&pl.left);}):active;
+  const need=roster.length;
+  const done=roster.filter(r=>{const pl=players.find(p=>p.slug===r.slug);return pl&&pl.guesses&&pl.guesses[S.round]!=null;}).length;
+  $("rWaitMsg").textContent=`Waiting for the others… (${done}/${need} guessed)`;
+  if(need>0 && done>=need){ liveReveal(players); }
+}
+function liveReveal(players){
+  if(S.liveRevealed) return;
+  S.liveRevealed=true; S.liveWaiting=false;
+  clearTimeout(S.skipTimer);
+  $("rWait").style.display="none";
+  $("rSkipBtn").style.display="none";
+  drawGuessMap(true,players);
+  // per-round compare table (everyone, sorted by this round's points)
+  const rows=players.filter(p=>!p.left).map(p=>{const gg=p.guesses&&p.guesses[S.round];return gg?{name:p.name,km:gg.km,pts:gg.pts,me:p.slug===S.slug}:null;}).filter(Boolean);
+  rows.sort((a,b)=>(b.pts||0)-(a.pts||0));
+  $("rCompare").innerHTML='<div class="eyebrow" style="margin:2px 0 8px;">This round</div>'+
+    rows.map((r,i)=>`<div class="lbrow${r.me?" me":""}" style="padding:8px 12px;margin-bottom:6px;">
+      <span class="rank">${i===0?"🥇":i+1}</span><span class="nm">${esc(r.name)}${r.me?" (you)":""}</span>
+      <span class="hint mono">${fmtDist(r.km||0)}</span><span class="pts mono">${(r.pts||0).toLocaleString()}</span></div>`).join("");
+  $("rCompare").style.display="block";
+  const last=(S.round+1>=S.rounds);
+  $("nextBtn").textContent=last?"See final scores →":"Next round →";
+  $("nextBtn").style.display="flex";
+}
+$("rSkipBtn").onclick=async ()=>{
+  // host forces continuation: mark everyone who hasn't guessed this round as "left"
+  const players=S.playersCache||[];
+  const stragglers=players.filter(p=>!p.left && !(p.guesses&&p.guesses[S.round]!=null) && p.slug!==S.slug);
+  try{
+    for(const p of stragglers){ await updateDoc(doc(db,"rooms",S.code,"players",p.slug),{left:true}); }
+  }catch(e){ console.warn(e); }
+  if(S.playersCache) checkBarrier(S.playersCache);
+};
+function liveNext(){
+  if(S.round+1>=S.rounds){ liveFinal(); return; }
+  startLiveRound(S.round+1);
+}
+function liveFinal(){
+  show("final");
+  const max=S.rounds*ROUND_MAX;
+  $("fScore").textContent=S.total.toLocaleString();
+  $("fMax").textContent=max.toLocaleString();
+  $("fBar").style.width=(S.total/max*100)+"%";
+  $("fEyebrow").textContent="Final scores";
+  $("fRounds").style.display="none";
+  $("fShare").style.display="none";
+  $("againBtn").style.display="none";
+  $("rematchBtn").style.display="none";
+  $("joinRematch").style.display="none";
+  $("finalLobbyBack").style.display="none";
+  $("shareBtn").style.display="flex";
+  $("finalStandings").style.display="block";
+  $("fSaveMsg").style.display="none";
+  if(S.total>=max*0.72) setTimeout(confettiBurst,700);
+  if(S.playersCache) renderPodium(livePodiumRows(S.playersCache));
+  renderBoard($("finalBoard"),livePodiumRows(S.playersCache||[]));
+}
+$("copyLiveCode").onclick=()=>{navigator.clipboard?.writeText(S.code).then(()=>toast("Code copied!"),()=>toast("Code: "+S.code));};
+$("liveBack").onclick=()=>{ cleanupLiveSubs(); S.liveStarted=false; show("menu"); };
+
 /* round (Google Street View — Maps Embed API via iframe) */
 function loadGmaps(){ return Promise.resolve(); }
 
-function placePano(p, idx){
+// Ask the Street View metadata API whether a pano exists near this place.
+// Returns the exact pano id on success, null if there's genuinely no imagery,
+// or throws if the request itself fails (network/API blocked) so we can fall back.
+async function panoIdFor(p){
+  const url="https://maps.googleapis.com/maps/api/streetview/metadata?location="
+    +p[1]+","+p[2]+"&radius=250&source=outdoor&key="+GMAPS_KEY;
+  const r=await withTimeout(fetch(url,{cache:"no-store"}),6000,"meta");
+  const j=await r.json();
+  return j.status==="OK" ? j.pano_id : null;
+}
+
+function ensureIframe(){
+  let iframe=document.getElementById("svEmbed");
+  if(!iframe){
+    iframe=document.createElement("iframe");
+    iframe.id="svEmbed";
+    iframe.allow="fullscreen";
+    iframe.setAttribute("referrerpolicy","no-referrer-when-downgrade");
+    $("explore").appendChild(iframe);
+  }
+  return iframe;
+}
+// embed a specific pano id (guaranteed to have imagery)
+function showPano(pano, idx){
   return new Promise(resolve=>{
     const heading=Math.floor(mulberry32(hashStr(S.code+"|pov|"+idx))()*360);
-    let iframe=document.getElementById("svEmbed");
-    if(!iframe){
-      iframe=document.createElement("iframe");
-      iframe.id="svEmbed";
-      iframe.style.cssText="position:absolute;inset:0;width:100%;height:100%;border:none;";
-      iframe.allow="fullscreen";
-      iframe.setAttribute("referrerpolicy","no-referrer-when-downgrade");
-      $("explore").appendChild(iframe);
-    }
-    let done=false;
-    const finish=()=>{ if(done)return; done=true; resolve(true); };
+    const iframe=ensureIframe();
+    let done=false; const finish=()=>{ if(done)return; done=true; resolve(); };
+    iframe.onload=finish;
+    iframe.src="https://www.google.com/maps/embed/v1/streetview?key="+GMAPS_KEY
+      +"&pano="+encodeURIComponent(pano)+"&heading="+heading+"&pitch=0&fov=90";
+    setTimeout(finish, 5000);
+  });
+}
+// fallback: embed by location if the metadata check couldn't run
+function showByLocation(p, idx){
+  return new Promise(resolve=>{
+    const heading=Math.floor(mulberry32(hashStr(S.code+"|pov|"+idx))()*360);
+    const iframe=ensureIframe();
+    let done=false; const finish=()=>{ if(done)return; done=true; resolve(); };
     iframe.onload=finish;
     iframe.src="https://www.google.com/maps/embed/v1/streetview?key="+GMAPS_KEY
       +"&location="+p[1]+","+p[2]+"&heading="+heading+"&pitch=0&fov=90";
@@ -979,6 +1265,7 @@ function placePano(p, idx){
 
 async function startRound(){
   S.guess=null;
+  S.submitted=false;
   S.hintLevel=0;S.hintCost=0;
   const hb=$("hintBtn"); hb.textContent="💡 Hint (−500)"; hb.disabled=false; hb.style.display="block";
   if(S.gMarker && S.gMap){ S.gMap.removeLayer(S.gMarker); S.gMarker=null; }
@@ -999,25 +1286,28 @@ async function startRound(){
     startTimer(); return;
   }
 
-  // walk the seeded order until a place actually has Street View imagery
-  let shown=false, lastP=null, attempts=0;
-  const maxAttempts=Math.min(8, PLACES.length);
+  // walk the seeded order, verifying each place actually has Street View imagery
+  // BEFORE showing it — so we never drop the player onto a black "no imagery" screen.
+  let shown=false, lastP=null, attempts=0, metaBroken=false;
+  const maxAttempts=Math.min(12, S.order.length);
   while(attempts<maxAttempts){
     const placeIdx=S.order[S.orderPtr % S.order.length];
     S.orderPtr++; attempts++;
     const p=PLACES[placeIdx]; lastP=p;
-    // the target you're guessing is the landmark's location
     S.answer={name:p[0],lat:p[1],lng:p[2],cont:p[4],cc:p[5]||""};
-    const ok=await placePano(p, placeIdx);
-    if(ok){ shown=true; break; }
-    // no imagery here → skip to the next seeded place automatically
+    let pano=null;
+    try{ pano=await panoIdFor(p); }
+    catch(e){ metaBroken=true; break; }   // metadata unreachable → stop pre-checking, fall back
+    if(pano){ await showPano(pano, placeIdx); shown=true; break; }
+    // ZERO_RESULTS here → silently try the next seeded place
   }
 
   if(!shown){
+    // fallback path: metadata couldn't be used — embed by location so the game still works
     const p=lastP || PLACES[S.order[0]];
     S.answer={name:p[0],lat:p[1],lng:p[2],cont:p[4],cc:p[5]||""};
-    $("satWarnMsg").textContent="No Street View nearby — you can still place a guess.";
-    startTimer(); return;
+    if(metaBroken){ await showByLocation(p, S.orderPtr); }
+    else { $("satWarnMsg").textContent="No Street View nearby — you can still place a guess."; }
   }
 
   $("satWarn").style.display="none";
@@ -1027,10 +1317,14 @@ async function startRound(){
 /* timer */
 function startTimer(){
   clearInterval(S.timer);
+  S.roundStart=performance.now(); // used for the speed bonus
   $("timer").style.display=S.roundTime>0?"block":"none";
   if(S.roundTime<=0)return;
   S.timeLeft=S.roundTime;paintTimer();
-  S.timer=setInterval(()=>{S.timeLeft--;paintTimer();if(S.timeLeft<=0){clearInterval(S.timer);openGuessMap(true);}},1000);
+  S.timer=setInterval(()=>{S.timeLeft--;paintTimer();if(S.timeLeft<=0){clearInterval(S.timer);
+    if(S.mode==="live") finalizeGuess(true);   // live must auto-submit so the round barrier resolves
+    else openGuessMap(true);
+  }},1000);
 }
 function paintTimer(){const m=Math.floor(S.timeLeft/60),s=S.timeLeft%60;
   $("timerVal").textContent=`${m}:${String(s).padStart(2,"0")}`;$("timer").classList.toggle("low",S.timeLeft<=20);}
@@ -1069,19 +1363,33 @@ function openGuessMap(forced){
   setTimeout(()=>S.gMap.invalidateSize(),120);
 }
 
-$("confirmGuess").onclick=()=>{
-  if(!S.guess)return;
+$("confirmGuess").onclick=()=>{ finalizeGuess(false); };
+
+function finalizeGuess(auto){
+  if(S.submitted) return;
+  if(!auto && !S.guess) return;      // manual confirm needs a pin
+  S.submitted=true;
   clearInterval(S.timer);
-  const km=haversine(S.guess,S.answer),tier=tierFor(km);
-  const pts=Math.max(0,scoreFor(km)-S.hintCost);
+  const hasGuess=!!S.guess;
+  const km=hasGuess?haversine(S.guess,S.answer):20000;
+  const tier=tierFor(km);
+  const secs=S.roundStart?(performance.now()-S.roundStart)/1000:S.roundTime;
+  const bonus=hasGuess?speedBonusFor(secs):0;
+  S.lastBonus=bonus; S.lastSecs=secs;
+  const pts=hasGuess?Math.max(0,scoreFor(km)-S.hintCost+bonus):0;
+  if(S.mode==="live"){
+    submitLiveGuess({km,pts,lat:hasGuess?S.guess.lat:null,lng:hasGuess?S.guess.lng:null});
+    return;
+  }
+  // solo / challenge
   S.total+=pts;
   S.results.push({round:S.round+1,km,pts,name:S.answer.name,cc:S.answer.cc});
-  if(S.mode==="friends"&&db){
+  if(S.mode==="challenge"&&db){
     setDoc(doc(db,"rooms",S.code,"r"+S.round+"guesses",S.slug),
       {name:S.name,lat:S.guess.lat,lng:S.guess.lng,pts,km}).catch(e=>console.warn("guess save failed",e));
   }
   showResult(km,pts,tier);
-};
+}
 
 /* animations */
 function animateNum(el,to,dur){
@@ -1111,53 +1419,92 @@ function confettiBurst(){
   })(t0);
 }
 
-/* result */
-function showResult(km,pts,tier){
-  show("result");
+/* trash talk — picked by how close the guess was */
+const TRASH={
+  perfect:["🎯 Okay, show-off. Did you plant a flag there yourself?","Pinpoint. Are you secretly the mailman here?","Bullseye! Google Maps is shaking.","Surgical. Absolutely disgusting (in a good way).","You didn't guess that — you LIVE there, admit it."],
+  great:["🔥 Barely broke a sweat. Nice one.","Sharp eye! The signs never stood a chance.","That's a pro move right there.","Clean guess. Your friends are nervous.","So close you could smell the street food."],
+  ok:["Not bad — you were in the neighborhood-ish.","Decent. You clearly saw *something* useful.","Middle of the pack. Room to flex more.","You got the vibe, missed the address.","Respectable. Not scary, but respectable."],
+  meh:["😬 Right country club, wrong country.","You were… on the correct planet. Barely.","That's a generous 'close-ish'.","The compass was clearly on vacation.","Bold guess. Wrong, but bold."],
+  bad:["💀 Buddy, that's a whole other continent.","Were you guessing with your eyes closed?","The map is somewhere over THERE.","Oof. Even a coin flip is jealous of that miss.","That guess needs its own search party.","GPS says: absolutely not.","You picked the exact opposite side of Earth. Impressive, honestly."]
+};
+function pickTrash(km){
+  const b = km<25?"perfect":km<150?"great":km<1000?"ok":km<3000?"meh":"bad";
+  const arr=TRASH[b];
+  return {text:arr[Math.floor(Math.random()*arr.length)], good:(b==="perfect"||b==="great")};
+}
+
+/* result — shared pieces (used by solo/challenge showResult AND live) */
+function paintScoreCard(km,pts,tier){
+  const tt=pickTrash(km);
+  const trashEl=$("rTrash");
+  trashEl.textContent=tt.text;
+  trashEl.classList.toggle("good",tt.good);
+  trashEl.style.animation="none"; void trashEl.offsetWidth; trashEl.style.animation=""; // replay pop
   $("rResRound").textContent=S.round+1;
   $("rTier").textContent=tier;
   $("rScore").textContent="0";
   animateNum($("rScore"),pts,900);
   const bar=$("rBar");
   bar.style.transition="none";bar.style.width="0%";void bar.offsetWidth;
-  bar.style.transition="";bar.style.width=(pts/5000*100)+"%";
+  bar.style.transition="";bar.style.width=Math.min(100,pts/ROUND_MAX*100)+"%";
   $("rPlace").textContent=S.answer.name;
   $("rFlag").textContent=flagEmoji(S.answer.cc);
   $("rDist").textContent=fmtDist(km);
+  const showBonus=(S.lastBonus||0)>0;
+  $("rSpeedLine").style.display=showBonus?"flex":"none";
+  if(showBonus)$("rSpeedVal").textContent="+"+S.lastBonus.toLocaleString()+" ("+Math.round(S.lastSecs)+"s)";
   $("rHintLine").style.display=S.hintCost>0?"flex":"none";
   if(S.hintCost>0)$("rHintVal").textContent="−"+S.hintCost.toLocaleString();
   $("rTotal").textContent=S.total.toLocaleString();
-  $("rCompare").style.display="none";
   const big=document.querySelector("#result .bignum");
   big.classList.remove("shake");
   if(km<50) setTimeout(confettiBurst,500);
   else if(km>4000){ void big.offsetWidth; big.classList.add("shake"); }
+}
+// draw the round map: answer + your guess, plus other players' pins when includeOthers
+function drawGuessMap(includeOthers, others){
+  if(!S.rMap){S.rMap=L.map("rmap",{attributionControl:false,zoomControl:false}).setView([0,0],2);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",{maxZoom:18}).addTo(S.rMap);}
+  S.rMap.eachLayer(l=>{if(l instanceof L.Marker||l instanceof L.Polyline||l instanceof L.CircleMarker)S.rMap.removeLayer(l);});
+  const a=[S.answer.lat,S.answer.lng]; const bounds=[a];
+  if(S.guess){
+    const g=[S.guess.lat,S.guess.lng]; bounds.push(g);
+    L.circleMarker(g,{radius:7,color:"#36D6C3",fillColor:"#36D6C3",fillOpacity:1,weight:2}).addTo(S.rMap)
+      .bindTooltip("You",includeOthers?{permanent:true,direction:"top",className:"gtip"}:{});
+    L.polyline([g,a],{color:"#FFB454",weight:2,dashArray:"6 6",opacity:.85}).addTo(S.rMap);
+  }
+  L.circleMarker(a,{radius:7,color:"#FFB454",fillColor:"#FFB454",fillOpacity:1,weight:2}).addTo(S.rMap).bindTooltip(S.answer.name);
+  if(includeOthers && others){
+    others.forEach(p=>{
+      if(p.slug===S.slug||p.left)return;
+      const gg=p.guesses&&p.guesses[S.round]; if(!gg||gg.lat==null)return;
+      const loc=[gg.lat,gg.lng]; bounds.push(loc);
+      L.circleMarker(loc,{radius:6,color:"#E879F9",fillColor:"#E879F9",fillOpacity:.85,weight:2})
+        .addTo(S.rMap).bindTooltip(esc(p.name),{permanent:true,direction:"top",className:"gtip"});
+      L.polyline([loc,a],{color:"#E879F9",weight:1.5,dashArray:"4 5",opacity:.6}).addTo(S.rMap);
+    });
+  }
+  setTimeout(()=>{S.rMap.invalidateSize();S.rMap.fitBounds(L.latLngBounds(bounds).pad(0.4),{maxZoom:7});},60);
+}
+/* result (solo / challenge) */
+function showResult(km,pts,tier){
+  show("result");
+  paintScoreCard(km,pts,tier);
+  $("rWait").style.display="none";
+  $("rCompare").style.display="none";
+  $("nextBtn").style.display="flex";
   $("nextBtn").textContent=(S.round+1>=S.rounds)?"See final score →":"Next round →";
   setTimeout(async ()=>{
-    if(!S.rMap){S.rMap=L.map("rmap",{attributionControl:false,zoomControl:false}).setView([0,0],2);
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",{maxZoom:18}).addTo(S.rMap);}
-    S.rMap.eachLayer(l=>{if(l instanceof L.Marker||l instanceof L.Polyline||l instanceof L.CircleMarker)S.rMap.removeLayer(l);});
-    const g=[S.guess.lat,S.guess.lng],a=[S.answer.lat,S.answer.lng];
-    const bounds=[g,a];
-    L.circleMarker(g,{radius:7,color:"#36D6C3",fillColor:"#36D6C3",fillOpacity:1,weight:2}).addTo(S.rMap)
-      .bindTooltip(S.mode==="friends"?"You":"Your guess",S.mode==="friends"?{permanent:true,direction:"top",className:"gtip"}:{});
-    L.circleMarker(a,{radius:7,color:"#FFB454",fillColor:"#FFB454",fillOpacity:1,weight:2}).addTo(S.rMap).bindTooltip(S.answer.name);
-    L.polyline([g,a],{color:"#FFB454",weight:2,dashArray:"6 6",opacity:.85}).addTo(S.rMap);
-    if(S.mode==="friends"&&db){
+    drawGuessMap(false,null);
+    if(S.mode==="challenge"&&db){
       try{
         const snap=await getDocs(collection(db,"rooms",S.code,"r"+S.round+"guesses"));
-        const rows=[{name:S.name,km,pts,me:true}];
-        snap.forEach(d=>{
-          if(d.id===S.slug)return;
-          const p=d.data();
-          rows.push({name:p.name,km:p.km,pts:p.pts});
-          const loc=[p.lat,p.lng];
-          bounds.push(loc);
-          L.circleMarker(loc,{radius:6,color:"#E879F9",fillColor:"#E879F9",fillOpacity:.85,weight:2})
-            .addTo(S.rMap).bindTooltip(esc(p.name),{permanent:true,direction:"top",className:"gtip"});
-          L.polyline([loc,a],{color:"#E879F9",weight:1.5,dashArray:"4 5",opacity:.6}).addTo(S.rMap);
-        });
-        if(rows.length>1){
+        const others=[];
+        snap.forEach(d=>{ if(d.id===S.slug)return; const p=d.data();
+          others.push({slug:d.id,name:p.name,guesses:{[S.round]:{km:p.km,pts:p.pts,lat:p.lat,lng:p.lng}}}); });
+        if(others.length){
+          drawGuessMap(true,others);
+          const rows=[{name:S.name,km,pts,me:true}].concat(others.map(o=>({name:o.name,km:o.guesses[S.round].km,pts:o.guesses[S.round].pts})));
           rows.sort((x,y)=>(y.pts||0)-(x.pts||0));
           $("rCompare").innerHTML='<div class="eyebrow" style="margin:2px 0 8px;">This round</div>'+
             rows.map((r,i)=>`<div class="lbrow${r.me?" me":""}" style="padding:8px 12px;margin-bottom:6px;">
@@ -1169,22 +1516,26 @@ function showResult(km,pts,tier){
         }
       }catch(e){console.warn("Couldn't load other guesses",e);}
     }
-    S.rMap.invalidateSize();S.rMap.fitBounds(L.latLngBounds(bounds).pad(0.4),{maxZoom:7});
   },140);
 }
-$("nextBtn").onclick=()=>{S.round++;if(S.round>=S.rounds)showFinal();else{show("game");startRound();}};
+$("nextBtn").onclick=()=>{
+  if(S.mode==="live"){ liveNext(); return; }
+  S.round++;
+  if(S.round>=S.rounds) showFinal();
+  else { show("game"); startRound(); }
+};
 
 /* final */
 async function showFinal(){
   show("final");
-  const max=S.rounds*5000;
+  const max=S.rounds*ROUND_MAX;
   $("fScore").textContent=S.total.toLocaleString();
   $("fMax").textContent=max.toLocaleString();
   $("fBar").style.width=(S.total/max*100)+"%";
 
   if(S.total>=max*0.72) setTimeout(confettiBurst,700);
 
-  if(S.mode==="friends"){
+  if(S.mode==="challenge"){
     $("fEyebrow").textContent="Your run is in";
     $("fRounds").style.display="none";
     $("fShare").style.display="none";
@@ -1265,11 +1616,11 @@ $("shareBtn").onclick=async ()=>{
   x.fillText("STREET VIEW CHALLENGE",W/2,150);
   x.letterSpacing="0px";
   x.fillStyle="#E8EDF4";x.font="700 64px monospace";
-  x.fillText("souvlaki_ha_hamod",W/2,240);
+  x.fillText("souvlaki_ha_hamod 2.0",W/2,240);
   x.fillStyle="#FFB454";x.font="700 210px monospace";
   x.fillText(S.total.toLocaleString(),W/2,540);
   x.fillStyle="#7C8AA5";x.font="500 44px monospace";
-  x.fillText("/ "+(S.rounds*5000).toLocaleString()+" pts",W/2,615);
+  x.fillText("/ "+(S.rounds*ROUND_MAX).toLocaleString()+" pts",W/2,615);
   x.fillStyle="#E8EDF4";x.font="500 40px sans-serif";
   const meta=`${S.rounds} rounds · ${REGION_LABEL[S.region]||"Whole world"} · ${DIFF_LABEL[S.diff]||"Normal"}`;
   x.fillText(meta,W/2,720);
