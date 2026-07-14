@@ -363,7 +363,20 @@
       <div class="eyebrow" style="margin-bottom:10px;">Live leaderboard</div>
       <div class="lb" id="leaderboard"><div class="lbempty">No scores yet — be the first!</div></div>
     </div>
+    <button class="btn teal" id="reviewBtn">🔍 Review everyone's guesses</button>
     <button class="btn ghost" id="lobbyBack">Leave challenge</button>
+  </div>
+</section>
+
+<!-- ============ ROUND REVIEW (challenge) ============ -->
+<section id="review" class="screen">
+  <div class="wrap" style="display:flex;flex-direction:column;gap:14px;">
+    <div class="brand"><b>Round review</b><span class="tag" id="revMeta">challenge</span></div>
+    <div class="seg" id="revRounds" style="flex-wrap:wrap;"></div>
+    <div class="place" id="revPlace">—</div>
+    <div id="revMap" style="height:240px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#0e1726;"></div>
+    <div id="revTable"><div class="spin"></div></div>
+    <button class="btn ghost" id="revBack">← Back to challenge</button>
   </div>
 </section>
 
@@ -1039,6 +1052,53 @@ function enterLobby(){
 }
 $("copyLobbyCode").onclick=()=>{navigator.clipboard?.writeText(S.code).then(()=>toast("Code copied!"),()=>toast("Code: "+S.code));};
 $("lobbyBack").onclick=()=>{ if(S.unsub){S.unsub();S.unsub=null;} if(S.unsubRoom){S.unsubRoom();S.unsubRoom=null;} show("menu"); };
+
+/* ---- challenge round review: see where everyone guessed, any time ---- */
+let revData=null;
+$("reviewBtn").onclick=async ()=>{
+  show("review");
+  $("revMeta").textContent=`${REGION_LABEL[S.region]||"Whole world"} · ${DIFF_LABEL[S.diff]||"Normal"}`;
+  $("revRounds").innerHTML=""; $("revPlace").textContent="Loading everyone's guesses…"; $("revTable").innerHTML='<div class="spin"></div>';
+  revData={answers:{},guesses:{}};
+  try{
+    for(let N=0;N<S.rounds;N++){
+      const [ansSnap,gSnap]=await Promise.all([
+        getDoc(doc(db,"rooms",S.code,"rounds",String(N))),
+        getDocs(collection(db,"rooms",S.code,"r"+N+"guesses"))
+      ]);
+      revData.answers[N]=ansSnap.exists()?ansSnap.data():null;
+      const arr=[]; gSnap.forEach(d=>arr.push({slug:d.id,...d.data()})); revData.guesses[N]=arr;
+    }
+  }catch(e){ console.warn("review load",e); }
+  $("revRounds").innerHTML=Array.from({length:S.rounds},(_,N)=>`<button data-n="${N}"${N===0?' class="on"':''}>${N+1}</button>`).join("");
+  $("revRounds").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    $("revRounds").querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+    renderReviewRound(+b.dataset.n);
+  });
+  renderReviewRound(0);
+};
+function renderReviewRound(N){
+  const ans=revData.answers[N], gs=revData.guesses[N]||[];
+  $("revPlace").innerHTML = ans? `Round ${N+1} · <b>${esc(ans.name)}</b> ${flagEmoji(ans.cc)}` : `Round ${N+1}`;
+  if(!S.revMap){ S.revMap=L.map("revMap",{attributionControl:false,zoomControl:false}).setView([20,0],2);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",{maxZoom:18}).addTo(S.revMap); }
+  S.revMap.eachLayer(l=>{if(l instanceof L.Marker||l instanceof L.Polyline||l instanceof L.CircleMarker)S.revMap.removeLayer(l);});
+  const bounds=[]; let a=null;
+  if(ans&&ans.lat!=null){ a=[ans.lat,ans.lng]; bounds.push(a);
+    L.circleMarker(a,{radius:7,color:"#F5A524",fillColor:"#F5A524",fillOpacity:1,weight:2}).addTo(S.revMap).bindTooltip(esc(ans.name)); }
+  gs.forEach(g=>{ if(g.lat==null)return; const loc=[g.lat,g.lng]; bounds.push(loc);
+    const me=g.slug===S.slug, col=me?"#22D3EE":"#E879F9";
+    L.circleMarker(loc,{radius:6,color:col,fillColor:col,fillOpacity:.9,weight:2}).addTo(S.revMap)
+      .bindTooltip(esc(g.name)+(me?" (you)":""),{permanent:true,direction:"top",className:"gtip"});
+    if(a) L.polyline([loc,a],{color:col,weight:1.4,dashArray:"4 5",opacity:.55}).addTo(S.revMap);
+  });
+  const rows=gs.map(g=>({name:g.name,km:g.km,pts:g.pts,me:g.slug===S.slug})).sort((x,y)=>(y.pts||0)-(x.pts||0));
+  $("revTable").innerHTML = rows.length
+    ? rows.map((r,i)=>`<div class="lbrow${r.me?" me":""}" style="padding:8px 12px;margin-bottom:6px;"><span class="rank">${i===0?"🥇":i+1}</span><span class="nm">${esc(r.name)}${r.me?" (you)":""}</span><span class="hint mono">${fmtDist(r.km||0)}</span><span class="pts mono">${(r.pts||0).toLocaleString()}</span></div>`).join("")
+    : '<div class="lbempty">No guesses recorded for this round yet.</div>';
+  setTimeout(()=>{S.revMap.invalidateSize(); if(bounds.length)S.revMap.fitBounds(L.latLngBounds(bounds).pad(0.4),{maxZoom:7});},60);
+}
+$("revBack").onclick=()=>show("lobby");
 $("playBtn").onclick=()=>{ S.round=0;S.total=0;S.results=[];S.orderPtr=0; show("game"); startRound(); };
 
 function listenBoard(container){
@@ -1424,6 +1484,9 @@ function finalizeGuess(auto){
   if(S.mode==="challenge"&&db){
     setDoc(doc(db,"rooms",S.code,"r"+S.round+"guesses",S.slug),
       {name:S.name,lat:S.guess.lat,lng:S.guess.lng,pts,km}).catch(e=>console.warn("guess save failed",e));
+    // record the answer for this round so anyone can review it later
+    setDoc(doc(db,"rooms",S.code,"rounds",String(S.round)),
+      {name:S.answer.name,lat:S.answer.lat,lng:S.answer.lng,cc:S.answer.cc},{merge:true}).catch(()=>{});
   }
   showResult(km,pts,tier);
 }
