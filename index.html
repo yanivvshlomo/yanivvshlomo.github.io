@@ -181,6 +181,7 @@
   .gtip{background:rgba(11,18,32,.88) !important;border:1px solid var(--line) !important;color:var(--ink) !important;
     font-size:10.5px !important;padding:2px 7px !important;border-radius:7px !important;box-shadow:none !important;}
   .gtip::before{display:none !important;}
+  .gtip.ans{color:var(--warm) !important;border-color:rgba(245,165,36,.5) !important;font-weight:700 !important;}
   .pod{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin-bottom:14px;}
   .podcol{flex:1;max-width:118px;text-align:center;display:flex;flex-direction:column;gap:5px;}
   .podname{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -1085,13 +1086,18 @@ function renderReviewRound(N){
   S.revMap.eachLayer(l=>{if(l instanceof L.Marker||l instanceof L.Polyline||l instanceof L.CircleMarker)S.revMap.removeLayer(l);});
   const bounds=[]; let a=null;
   if(ans&&ans.lat!=null){ a=[ans.lat,ans.lng]; bounds.push(a);
-    L.circleMarker(a,{radius:7,color:"#F5A524",fillColor:"#F5A524",fillOpacity:1,weight:2}).addTo(S.revMap).bindTooltip(esc(ans.name)); }
+    // the real answer: a bold amber target with a permanent label
+    L.circleMarker(a,{radius:11,color:"#F5A524",fillColor:"#F5A524",fillOpacity:.25,weight:2}).addTo(S.revMap);
+    L.circleMarker(a,{radius:5,color:"#fff",fillColor:"#F5A524",fillOpacity:1,weight:2}).addTo(S.revMap)
+      .bindTooltip("✓ "+esc(ans.name),{permanent:true,direction:"bottom",className:"gtip ans"});
+  }
   gs.forEach(g=>{ if(g.lat==null)return; const loc=[g.lat,g.lng]; bounds.push(loc);
     const me=g.slug===S.slug, col=me?"#22D3EE":"#E879F9";
     L.circleMarker(loc,{radius:6,color:col,fillColor:col,fillOpacity:.9,weight:2}).addTo(S.revMap)
       .bindTooltip(esc(g.name)+(me?" (you)":""),{permanent:true,direction:"top",className:"gtip"});
     if(a) L.polyline([loc,a],{color:col,weight:1.4,dashArray:"4 5",opacity:.55}).addTo(S.revMap);
   });
+  if(!a) $("revPlace").innerHTML+=' <span class="hint">· answer pin unavailable for this older round</span>';
   const rows=gs.map(g=>({name:g.name,km:g.km,pts:g.pts,me:g.slug===S.slug})).sort((x,y)=>(y.pts||0)-(x.pts||0));
   $("revTable").innerHTML = rows.length
     ? rows.map((r,i)=>`<div class="lbrow${r.me?" me":""}" style="padding:8px 12px;margin-bottom:6px;"><span class="rank">${i===0?"🥇":i+1}</span><span class="nm">${esc(r.name)}${r.me?" (you)":""}</span><span class="hint mono">${fmtDist(r.km||0)}</span><span class="pts mono">${(r.pts||0).toLocaleString()}</span></div>`).join("")
